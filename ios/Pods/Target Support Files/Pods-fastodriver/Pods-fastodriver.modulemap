@@ -1,0 +1,6 @@
+module Pods_fastodriver {
+  umbrella header "Pods-fastodriver-umbrella.h"
+
+  export *
+  module * { export * }
+}

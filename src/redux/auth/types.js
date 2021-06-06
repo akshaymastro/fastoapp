@@ -1,0 +1,5 @@
+export default actionTypes = {
+  USER_LOGIN_SUCCESS: 'USER_LOGIN_SUCCESS',
+  CLEAR_USER: 'CLEAR_USER',
+  USER_DETAILS: 'USER_DETAILS',
+};

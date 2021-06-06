@@ -1,0 +1,6 @@
+module Pods_fastodriver_fastodriverTests {
+  umbrella header "Pods-fastodriver-fastodriverTests-umbrella.h"
+
+  export *
+  module * { export * }
+}

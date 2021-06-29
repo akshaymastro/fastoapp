@@ -1,4 +1,4 @@
-import React, { Component, useState, useRef } from "react";
+import React, { Component } from "react";
 import {
   StyleSheet,
   View,
@@ -6,38 +6,21 @@ import {
   Button,
   Image,
   TextInput,
-  StatusBar,
   TouchableHighlight,
   TouchableOpacity,
   ActivityIndicator,
-  ScrollView,
   Dimensions,
-  Platform,
   BackHandler,
-  Alert,
 } from "react-native";
-import { usetheme } from "@react-navigation/native";
-
-import LinearGradient from "react-native-linear-gradient";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Feather from "react-native-vector-icons/Feather";
-import * as Animatable from "react-native-animatable";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import { useTheme } from "../node_modules/react-native-paper";
-import MapView, {
-  PROVIDER_GOOGLE,
-  Marker,
-  Callout,
-  Polyline,
-} from "react-native-maps";
+import MapView, { Marker, Callout, Polyline, Polygon } from "react-native-maps";
 import Geolocation from "@react-native-community/geolocation";
 import apiKey from "./google_api_key";
 import _ from "lodash";
 import socketIO from "socket.io-client";
 import BottomButton from "../component/BottomButton";
-import Select2 from "react-native-select-two";
 import RBSheet from "react-native-raw-bottom-sheet";
-import Menu, { MenuItem, MenuDivider } from "react-native-material-menu";
 import Geocoder from "react-native-geocoding";
 
 import PassengerBottom from "./Passenger/passengerBottom";
@@ -51,15 +34,21 @@ import BookingConfirmMessage from "./Passenger/BookingConfirmMessage";
 import CancelTrip from "./Passenger/CancelTrip";
 import io from "socket.io-client";
 import { connect } from "react-redux";
-import { setRideData, bookRide, getCurrentRide } from "../redux/vehicle/action";
-import AsyncStorage from "@react-native-community/async-storage";
+import { setRideData, bookRide } from "../redux/vehicle/action";
 import jwtDecode from "jwt-decode";
-const socket = io("10.0.2.2:4000/");
+import { getDistance } from "geolib";
+import { getFare } from "../redux/ride/actions";
+import { threadId } from "worker_threads";
+import RestClient from "../utils/RestClient";
+
+const socket = io("https://fasto-backend.herokuapp.com/");
 
 class PassengerScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      ridePrice: "",
+      rideVehicalPrice: "",
       lookingForDriver: false,
       driverIsOnTheWay: false,
       predictions: [],
@@ -73,7 +62,6 @@ class PassengerScreen extends Component {
       searchRide: false,
       bookingConfirm: false,
       bookingConfirmMessage: false,
-      updatedRide: {},
       cancelTrip: false,
       cancelRideReason: {
         id: "",
@@ -109,6 +97,41 @@ class PassengerScreen extends Component {
       1000
     );
   }
+  calcPrice = async () => {
+    var getCurrentDisance = await getDistance(
+      (latitudeLocationPick = this.state.pickUpLocation),
+      (latitudeLocationDrop = this.state.dropLocation)
+    );
+    const rideDistance = getCurrentDisance / 1000;
+    const vehiclePrice = this.state.rideVehicalPrice;
+
+    if (rideDistance > 40) {
+      const distance = rideDistance - 40;
+      const params = {
+        km: distance,
+        city_name: this.state.pickupDestination,
+      };
+      const response = await fetch(
+        "https://fasto-backend.herokuapp.com/basefare/getfare/",
+        {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+          },
+          body: JSON.stringify(params),
+        }
+      );
+      const result = await response.json();
+      const fuelCharge = result?.data[0]?.fuelcharge.fuelcharge || 0;
+      this.setState({
+        ridePrice: +fuelCharge + Math.floor(rideDistance * vehiclePrice),
+      });
+    } else {
+      this.setState({
+        ridePrice: Math.floor(rideDistance * vehiclePrice),
+      });
+    }
+  };
 
   onBackPress = () => {
     BackHandler.exitApp();
@@ -146,32 +169,16 @@ class PassengerScreen extends Component {
       this.setState({
         pickUpLocation: latLong,
       });
-    console.log("checking props :: ", this.props);
     const token = jwtDecode(this.props.common.apiToken);
-    console.log(token.user);
     this.props.setRideData({ key: "ByUserID", value: token.user._id });
     this.props.setRideData({ key: "passengerBottom", value: true });
     this.props.setRideData({ key: "pickupContact", value: false });
     // this.props.changeLocationPickUp(latLong);
   }
   componentDidUpdate(preProps, nextProps) {
-    // setTimeout(() => {
-    //   if (
-    //     this.props.vehicle?.currentRide?._id &&
-    //     this.props.vehicle?.currentRide?.status == "pending"
-    //   ) {
-    //     socket.on("connection", (res) => {
-    //       console.log("responce connection", res);
-    //     });
-    //     socket.emit("getCurrentRide", {
-    //       id: this.props.vehicle?.currentRide?._id,
-    //     });
-    //     this.props.getCurrentRide(this.props.vehicle?.currentRide?._id);
-    //   }
-    // }, 10000);
-
     const lat = this.props.latitude;
     const long = this.props.longitude;
+
     if (
       lat != this.state.pickUpLocation.latitude ||
       long != this.state.pickUpLocation.longitude
@@ -204,7 +211,7 @@ class PassengerScreen extends Component {
     this.setState({
       setChecked: val,
     });
-    console.log(this.state.setChecked);
+    // console.log(this.state.setChecked);
   };
 
   openModal() {
@@ -236,14 +243,13 @@ class PassengerScreen extends Component {
   async onChangePickupDestination(pickupDestination) {
     const apiUrl = `https://maps.googleapis.com/maps/api/place/autocomplete/json?key=${apiKey}
     &input=${pickupDestination}&location=${this.props.latitude},${this.props.longitude}&radius=2000`;
-    console.log(" This is pickup Destination url", apiUrl);
     try {
       const result = await fetch(apiUrl);
       const json = await result.json();
       this.setState({
         pickupPredictions: json.predictions,
       });
-      console.log("onChangePickupDestination ", json.predictions);
+      // console.log("onChangePickupDestination ", json.predictions);
       //   Geocoder.from()
       // .then(json => {
       // 	var location = json.results[0].geometry.location;
@@ -256,20 +262,18 @@ class PassengerScreen extends Component {
   }
 
   handleRegionChange = (data) => {
-    console.log(data);
+    // console.log(data);
   };
 
   async onChangeDestination(destination) {
     const apiUrl = `https://maps.googleapis.com/maps/api/place/autocomplete/json?key=${apiKey}
         &input=${destination}&location=${this.props.latitude},${this.props.longitude}&radius=2000`;
-    console.log(apiUrl);
     try {
       const result = await fetch(apiUrl);
       const json = await result.json();
       this.setState({
         predictions: json.predictions,
       });
-      console.log(json, "hashdh");
     } catch (err) {
       console.error(err);
     }
@@ -280,7 +284,7 @@ class PassengerScreen extends Component {
     var socket = socketIO.connect("https://fasto-backend.herokuapp.com");
 
     socket.on("connect", () => {
-      console.log("client connected");
+      // console.log("client connected");
       //Request a taxi!
       socket.emit("taxiRequest", this.props.routeResponse);
     });
@@ -292,8 +296,8 @@ class PassengerScreen extends Component {
       });
       this.setState({
         lookingForDriver: false,
-        driverIsOnTheWay: true,
         driverLocation,
+        driverIsOnTheWay: true,
       });
     });
   }
@@ -306,8 +310,6 @@ class PassengerScreen extends Component {
     let cnfBooking = null;
     let findingDriverActIndicator = null;
     let driverMarker = null;
-
-    console.log("current ride", this.props.vehicle.current);
 
     if (this.props.latitude === null) return null;
 
@@ -511,7 +513,6 @@ class PassengerScreen extends Component {
               </View>
             </View>
           </View>
-
           <View
             style={{
               flexDirection: "row",
@@ -579,7 +580,7 @@ class PassengerScreen extends Component {
             .then((json) => {
               var location = json.results[0].geometry.location;
 
-              console.log("geocode location :: ", location);
+              // console.log("geocode location :: ", location);
               let locationPayload = {
                 latitude: location.lat,
                 longitude: location.lng,
@@ -630,7 +631,7 @@ class PassengerScreen extends Component {
             .then((json) => {
               var location = json.results[0].geometry.location;
 
-              console.log("geocode Drop location :: ", location);
+              // console.log("geocode Drop location :: ", location);
               let droplocationPayload = {
                 latitude: location.lat,
                 longitude: location.lng,
@@ -689,9 +690,12 @@ class PassengerScreen extends Component {
               style={styles.textInput}
               clearButtonMode="always"
               onChangeText={(pickupDestination) => {
-                console.log(pickupDestination);
                 this.setState({ pickupDestination });
                 this.onChangePickupDestinationDebounced(pickupDestination);
+                Geolocation.getCurrentPosition(
+                  (position = this.state.pickupDestination) =>
+                    console.log("DataLocation", position)
+                );
               }}
             />
             <TouchableOpacity
@@ -727,7 +731,6 @@ class PassengerScreen extends Component {
               style={styles.textInput}
               clearButtonMode="always"
               onChangeText={(destination) => {
-                console.log(destination);
                 this.setState({ destination });
                 this.onChangeDestinationDebounced(destination);
               }}
@@ -812,7 +815,7 @@ class PassengerScreen extends Component {
               )
                 .then((json) => {
                   var addressComponent = json.results[0].address_components[0];
-                  console.log("addressComponent :: ", addressComponent);
+                  // console.log("addressComponent :: ", addressComponent);
                   this.setState({
                     pickupDestination: addressComponent.short_name,
                   });
@@ -882,7 +885,11 @@ class PassengerScreen extends Component {
         ) : null}
         {this.props.vehicle.rideData.passengerBottom ? (
           <View style={styles.passengerBottom}>
-            <PassengerBottom />
+            <PassengerBottom
+              getVehiclePrice={(rideVehicalPrice) =>
+                this.setState({ rideVehicalPrice })
+              }
+            />
             <View style={styles.passengerBottomView}>
               <TouchableOpacity
                 style={styles.passengerBottomButton}
@@ -907,6 +914,7 @@ class PassengerScreen extends Component {
                     key: "passengerBottom",
                     value: false,
                   });
+                  this.calcPrice();
                 }}
               >
                 <Text style={styles.passengerBottomText}>Next</Text>
@@ -917,7 +925,7 @@ class PassengerScreen extends Component {
 
         {this.props.vehicle.rideData.searchRide ? (
           <View style={styles.passengerBottom}>
-            <SearchRide />
+            <SearchRide ridePrice={this.state.ridePrice} />
             <View style={styles.passengerBottomView}>
               <View style={{ flexDirection: "row" }}>
                 <TouchableOpacity
@@ -972,7 +980,6 @@ class PassengerScreen extends Component {
                     key: "searchRide",
                     value: true,
                   });
-                  console.log(this.props.vehicle.rideData, "rideData");
                   this.props.bookRide(this.props.vehicle.rideData);
                 }}
               >
@@ -983,10 +990,13 @@ class PassengerScreen extends Component {
         ) : null}
 
         {this.state.bookingConfirm ? (
-          <BookingConfirm onChange={(value) => this.setState(value)} />
+          <BookingConfirm
+            ridePrice={this.state.ridePrice}
+            onChange={(value) => this.setState(value)}
+          />
         ) : null}
 
-        {this.props.vehicle?.current?.status == "accepted" ? (
+        {this.state.bookingConfirmMessage ? (
           <BookingConfirmMessage onChange={(value) => this.setState(value)} />
         ) : null}
 
@@ -1003,13 +1013,12 @@ const mapStateToProps = (state) => {
   return {
     vehicle: state.vehicle,
     common: state.common,
+    fare: state.ride,
   };
 };
-export default connect(mapStateToProps, {
-  setRideData,
-  bookRide,
-  getCurrentRide,
-})(PassengerScreen);
+export default connect(mapStateToProps, { setRideData, bookRide, getFare })(
+  PassengerScreen
+);
 const styles = StyleSheet.create({
   suggestions: {
     backgroundColor: "white",

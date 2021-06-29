@@ -1,9 +1,9 @@
-import React from 'react';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import NetInfo from '@react-native-community/netinfo';
-import Navigation from './Navigation';
-import {networkReachability} from './redux/network/actions';
+import React from "react";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import NetInfo from "@react-native-community/netinfo";
+import Navigation from "./Navigation";
+import { networkReachability } from "./redux/network/actions";
 
 class AppNavigator extends React.Component {
   constructor(props) {
@@ -14,29 +14,29 @@ class AppNavigator extends React.Component {
   }
 
   componentDidMount() {
-    NetInfo.fetch().then(state => {
+    NetInfo.fetch().then((state) => {
       this.updateNetworkState(state);
     });
-    this.unsubscribe = NetInfo.addEventListener(state => {
+    this.unsubscribe = NetInfo.addEventListener((state) => {
       this.updateNetworkState(state);
     });
   }
 
-  updateNetworkState = state => {
+  updateNetworkState = (state) => {
     let isConnected = state.isConnected;
-    if (state && state.type && state.type == 'cellular') {
+    if (state && state.type && state.type == "cellular") {
       if (
         state &&
         state.details &&
         state.details.cellularGeneration &&
-        state.details.cellularGeneration == '2g'
+        state.details.cellularGeneration == "2g"
       ) {
         //|| state.details.cellularGeneration == '3g'
         isConnected = false;
       }
     }
     this.props.networkReachability(isConnected);
-    console.log('your internet connection status ', this.props.isOnline);
+    // console.log('your internet connection status ', this.props.isOnline);
   };
 
   componentWillUnmount() {

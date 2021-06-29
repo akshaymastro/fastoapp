@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   StyleSheet,
   View,
@@ -12,41 +12,41 @@ import {
   StatusBar,
   Alert,
   ImageBackground,
-} from 'react-native';
+} from "react-native";
 
-import * as Animatable from 'react-native-animatable';
-import LinearGradient from 'react-native-linear-gradient';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import Feather from 'react-native-vector-icons/Feather';
+import * as Animatable from "react-native-animatable";
+import LinearGradient from "react-native-linear-gradient";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import Feather from "react-native-vector-icons/Feather";
 
-import {AuthContext} from '../component/context';
-import Users from '../model/users';
-import {connect, useSelector, useDispatch} from 'react-redux';
+import { AuthContext } from "../component/context";
+import Users from "../model/users";
+import { connect, useSelector, useDispatch } from "react-redux";
 
-import {bindActionCreators} from 'redux';
+import { bindActionCreators } from "redux";
 
-import {CommonActions, useTheme} from '@react-navigation/native';
+import { CommonActions, useTheme } from "@react-navigation/native";
 
-const SignInScreen = ({navigation}) => {
-  const {colors} = useTheme();
-  const image = require('../assets/backgroundSmall.png');
+const SignInScreen = ({ navigation }) => {
+  const { colors } = useTheme();
+  const image = require("../assets/backgroundSmall.png");
 
   const [data, setData] = React.useState({
-    username: '',
-    password: '',
+    username: "",
+    password: "",
     check_textInputChange: false,
     secureTextEntry: true,
     isValidUser: true,
     isValidPassword: true,
   });
   const [view, changeView] = React.useState({
-    viewTitle: 'Mobile no.',
-    viewPlaceholder: '+91-00000-00000',
+    viewTitle: "Mobile no.",
+    viewPlaceholder: "+91-00000-00000",
   });
 
-  const {signIn} = React.useContext(AuthContext);
+  const { signIn } = React.useContext(AuthContext);
 
-  const OTPInput = val => {
+  const OTPInput = (val) => {
     if (val.trim().length >= 5) {
       setData({
         ...data,
@@ -64,7 +64,7 @@ const SignInScreen = ({navigation}) => {
     }
   };
 
-  const textInputChange = val => {
+  const textInputChange = (val) => {
     if (val.trim().length >= 10) {
       setData({
         ...data,
@@ -82,7 +82,7 @@ const SignInScreen = ({navigation}) => {
     }
   };
 
-  const handlePasswordChnage = val => {
+  const handlePasswordChnage = (val) => {
     if (val.trim().length >= 8) {
       setData({
         ...data,
@@ -105,7 +105,7 @@ const SignInScreen = ({navigation}) => {
     });
   };
 
-  const handleValiUser = val => {
+  const handleValiUser = (val) => {
     if (val.trim().length >= 4) {
       setData({
         ...data,
@@ -125,24 +125,24 @@ const SignInScreen = ({navigation}) => {
   // }
 
   const Enter = async () => {
-    console.log('Enter function running');
-    let GetOtp = await AsyncStorage.getItem('OTP');
-    let GetUser = await AsyncStorage.getItem('USER');
-    let GetNumber = await AsyncStorage.getItem('Number');
+    console.log("Enter function running");
+    let GetOtp = await AsyncStorage.getItem("OTP");
+    let GetUser = await AsyncStorage.getItem("USER");
+    let GetNumber = await AsyncStorage.getItem("Number");
     //const dispatch = useDispatch()
-    GetNumber = GetNumber.replace(/^"(.*)"$/, '$1');
-    console.log('From Enter' + ' ' + GetOtp);
+    GetNumber = GetNumber.replace(/^"(.*)"$/, "$1");
+    console.log("From Enter" + " " + GetOtp);
     if ((data.username = GetOtp)) {
       const url = `http://192.168.43.75:4000/auth/login`;
       await axios
-        .post(url, {Mobile: GetNumber})
-        .then(response =>
-          AsyncStorage.setItem('USER', JSON.stringify(response.data)).then(
+        .post(url, { Mobile: GetNumber })
+        .then((response) =>
+          AsyncStorage.setItem("USER", JSON.stringify(response.data)).then(
             signIn(GetUser),
-            dispatch({type: 'PASS_SIGN', payload: GetUser}),
-          ),
+            dispatch({ type: "PASS_SIGN", payload: GetUser })
+          )
         )
-        .catch(error => console.log(error));
+        .catch((error) => console.log(error));
       //         const data = { Mobile: '7017364693' };
 
       // fetch('http://192.168.43.75:4000/auth/login', {
@@ -191,48 +191,48 @@ const SignInScreen = ({navigation}) => {
     // }
   };
 
-  const Register = async GetNumber => {
+  const Register = async (GetNumber) => {
     const url = `http://192.168.43.75:4000/auth/createuser`;
 
     await axios
-      .post(url, {Mobile: GetNumber})
+      .post(url, { Mobile: GetNumber })
       .then(
-        async response =>
-          await AsyncStorage.setItem('USER', JSON.stringify(response.data)),
+        async (response) =>
+          await AsyncStorage.setItem("USER", JSON.stringify(response.data))
       )
-      .catch(error => console.log(error));
-    let GetUser = await AsyncStorage.getItem('USER');
-    console.log('User from async when registed as new' + ' ' + GetUser);
+      .catch((error) => console.log(error));
+    let GetUser = await AsyncStorage.getItem("USER");
+    console.log("User from async when registed as new" + " " + GetUser);
   };
 
-  const GetUser = async Username => {
-    const url1 = 'http://192.168.43.75:4000/auth/getuser';
+  const GetUser = async (Username) => {
+    const url1 = "http://192.168.43.75:4000/auth/getuser";
     await axios
-      .post(url1, {Mobile: Username})
+      .post(url1, { Mobile: Username })
       .then(
-        async resp =>
-          await AsyncStorage.setItem('USER', JSON.stringify(resp.data)),
+        async (resp) =>
+          await AsyncStorage.setItem("USER", JSON.stringify(resp.data))
       )
-      .catch(error => console.log(error));
-    let GetUser = await AsyncStorage.getItem('USER');
-    console.log('User from async' + ' ' + GetUser);
+      .catch((error) => console.log(error));
+    let GetUser = await AsyncStorage.getItem("USER");
+    console.log("User from async" + " " + GetUser);
   };
 
   const loginHandle = (userName, password) => {
-    const foundUser = Users.filter(item => {
+    const foundUser = Users.filter((item) => {
       return userName == item.username && password == item.password;
     });
 
     if (data.username.length == 0 || data.password.length == 0) {
-      Alert.alert('Wrong input', 'Username or Password field cannot be empty', [
-        {text: 'Okay'},
+      Alert.alert("Wrong input", "Username or Password field cannot be empty", [
+        { text: "Okay" },
       ]);
       return;
     }
 
     if (foundUser.length == 0) {
-      Alert.alert('Invalid User', 'Username or Password is incorrect.', [
-        {text: 'Okay'},
+      Alert.alert("Invalid User", "Username or Password is incorrect.", [
+        { text: "Okay" },
       ]);
       return;
     }
@@ -250,25 +250,26 @@ const SignInScreen = ({navigation}) => {
       </ImageBackground>
       <Animatable.View
         animation="fadeInUpBig"
-        style={[styles.footer, {backgroundColor: colors.background}]}>
-        <Text style={[styles.text_footer, {color: colors.text}]}>
-          {' '}
-          {view.viewTitle}{' '}
+        style={[styles.footer, { backgroundColor: colors.background }]}
+      >
+        <Text style={[styles.text_footer, { color: colors.text }]}>
+          {" "}
+          {view.viewTitle}{" "}
         </Text>
         <View style={styles.action}>
           <FontAwesome name="phone" color={colors.text} size={20} />
           <TextInput
             keyboardType="number-pad"
-            maxLength={view.viewTitle === 'Mobile no.' ? 10 : 5}
+            maxLength={view.viewTitle === "Mobile no." ? 10 : 5}
             placeholder={view.viewPlaceholder}
-            style={[styles.textInput, {color: colors.text}]}
+            style={[styles.textInput, { color: colors.text }]}
             autoCapitalize="none"
-            onChangeText={val => {
-              view.viewTitle === 'Mobile no.'
+            onChangeText={(val) => {
+              view.viewTitle === "Mobile no."
                 ? textInputChange(val)
                 : OTPInput(val);
             }}
-            onEndEditing={e => handleValiUser(e.nativeEvent.text)}
+            onEndEditing={(e) => handleValiUser(e.nativeEvent.text)}
           />
           {data.check_textInputChange ? (
             <Animatable.View>
@@ -290,11 +291,13 @@ const SignInScreen = ({navigation}) => {
             onPress={() => {
               Login();
               //   view.viewTitle === 'Mobile no.' ? Login() : Enter();
-            }}>
+            }}
+          >
             <LinearGradient
-              colors={['#222546', '#222546']}
-              style={styles.signIn}>
-              <Text style={[styles.textSign, {color: '#fff'}]}>Sign In</Text>
+              colors={["#222546", "#222546"]}
+              style={styles.signIn}
+            >
+              <Text style={[styles.textSign, { color: "#fff" }]}>Sign In</Text>
             </LinearGradient>
           </TouchableOpacity>
         </View>
@@ -308,37 +311,37 @@ export default SignInScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#222546',
+    backgroundColor: "#222546",
   },
   header: {
     flex: 3,
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
     paddingHorizontal: 20,
     paddingBottom: 50,
   },
   footer: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     paddingHorizontal: 20,
     paddingVertical: 30,
   },
   text_header: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: "#fff",
+    fontWeight: "bold",
     fontSize: 30,
   },
   text_footer: {
-    color: '#05375a',
-    fontWeight: 'bold',
+    color: "#05375a",
+    fontWeight: "bold",
     fontSize: 18,
   },
   action: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginTop: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#f2f2f2',
+    borderBottomColor: "#f2f2f2",
     paddingBottom: 5,
   },
   textInput: {
@@ -347,26 +350,26 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
   },
   button: {
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 50,
   },
   signIn: {
-    width: '100%',
+    width: "100%",
     height: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     borderRadius: 10,
   },
   textSign: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   errorMsg: {
-    color: '#FF0000',
+    color: "#FF0000",
     fontSize: 14,
   },
   image: {
     flex: 1,
-    resizeMode: 'stretch',
+    resizeMode: "stretch",
   },
 });

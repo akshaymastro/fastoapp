@@ -12,8 +12,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import AboutVehicle from "./AboutVehicle";
 import { getVehicleList, setRideData } from "../../redux/vehicle/action";
 import { useDispatch, useSelector } from "react-redux";
-
-const PassengerBottom = () => {
+const PassengerBottom = (props) => {
   const dispatch = useDispatch();
   const { vehicle, rideData } = useSelector((state) => state.vehicle);
 
@@ -34,54 +33,54 @@ const PassengerBottom = () => {
     select: "",
     aboutVehicle: false,
     list: [
-      {
-        id: 1,
-        Name: "Tata Ace",
-        Capacity: "750Kg",
-        Size: "7x4x5 FT.",
-        urlImage: require(`../../assets/tempo/tata-ace.png`),
-        isSlected: false,
-        Time: "5 Mins",
-        Cost: "600",
-      },
-      {
-        id: 2,
-        Name: "Tata Ape",
-        Capacity: "850Kg",
-        Size: "8x6x8 FT.",
-        urlImage: require(`../../assets/tempo/pick-up.png`),
-        isSlected: false,
-        Time: "8 Mins",
-        Cost: "800",
-      },
-      {
-        id: 3,
-        Name: "Eco",
-        Capacity: "950Kg",
-        Size: "9x6x5 FT.",
-        urlImage: require(`../../assets/tempo/eeco.png`),
-        isSlected: false,
-        Time: "10 Mins",
-        Cost: "1000",
-      },
-      {
-        id: 4,
-        Name: "Pickup",
-        Capacity: "1050Kg",
-        Size: "5x4x3 FT.",
-        urlImage: require(`../../assets/tempo/tata-ace.png`),
-        isSlected: false,
-        Time: "15 Mins",
-        Cost: "1200",
-      },
+      // {
+      //   id: 1,
+      //   Name: "Tata Ace",
+      //   Capacity: "750Kg",
+      //   Size: "7x4x5 FT.",
+      //   urlImage: require(`../../assets/tempo/tata-ace.png`),
+      //   isSlected: false,
+      //   Time: "5 Mins",
+      //   Cost: "600",
+      // },
+      // {
+      //   id: 2,
+      //   Name: "Tata Ape",
+      //   Capacity: "850Kg",
+      //   Size: "8x6x8 FT.",
+      //   urlImage: require(`../../assets/tempo/pick-up.png`),
+      //   isSlected: false,
+      //   Time: "8 Mins",
+      //   Cost: "800",
+      // },
+      // {
+      //   id: 3,
+      //   Name: "Eco",
+      //   Capacity: "950Kg",
+      //   Size: "9x6x5 FT.",
+      //   urlImage: require(`../../assets/tempo/eeco.png`),
+      //   isSlected: false,
+      //   Time: "10 Mins",
+      //   Cost: "1000",
+      // },
+      // {
+      //   id: 4,
+      //   Name: "Pickup",
+      //   Capacity: "1050Kg",
+      //   Size: "5x4x3 FT.",
+      //   urlImage: require(`../../assets/tempo/tata-ace.png`),
+      //   isSlected: false,
+      //   Time: "15 Mins",
+      //   Cost: "1200",
+      // },
     ],
   });
 
   const { Name, urlImage, Capacity, Size, list, select, aboutVehicle, url } =
     selectedVehical;
 
-  console.log("this", vehicle);
-  console.log("this riderdata", rideData);
+  // console.log("this", vehicle);
+  // console.log("this riderdata", rideData);
 
   return (
     <View>
@@ -129,6 +128,7 @@ const PassengerBottom = () => {
                       select: lists._id,
                       url: lists.vehical_image,
                     });
+                    props.getVehiclePrice(lists.vehical_KM);
                     dispatch(
                       setRideData({
                         key: "vehicalSelected",

@@ -13,6 +13,7 @@ import authReducer from "./auth";
 import toastReducer from "./Toast";
 import networkReducer from "./network";
 import vehicleReducer from "./vehicle";
+import rideReducer from "./ride";
 
 const rootReducer = combineReducers({
   toastReducer: toastReducer,
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
   common: commonReducer,
   vehicle: vehicleReducer,
   auth: authReducer,
+  ride: rideReducer,
   // splash: splashReducer,
 });
 

@@ -5,7 +5,7 @@ import { Avatar} from 'react-native-paper';
 
 import LinearGradient from 'react-native-linear-gradient';
 
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 
 
 

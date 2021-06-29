@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   StyleSheet,
   Text,
@@ -7,22 +7,19 @@ import {
   Image,
   TextInput,
 } from "react-native";
-import io from "socket.io-client";
+import { useDispatch, useSelector } from "react-redux";
+
 import LinearGradient from "react-native-linear-gradient";
-import { useSelector } from "react-redux";
-const socket = io("https://fasto-backend.herokuapp.com/");
+
 const OtpSubmit = (props) => {
-  const vehicle = useSelector((state) => state.vehicle);
-  const [pickupOtp, setPickupotp] = useState("");
-  const startTrip = () => {
-    console.log("kskskssk");
-    socket.emit("updateRide", {
-      id: vehicle.selectedRide._id,
-      status: "inprogress",
-      StartOpt: pickupOtp,
-      loadingTimer: true,
-    });
-  };
+  //   const dispatch = useDispatch();
+  //   const availableTrips = useSelector(
+  //     (state) => state.vehicle.availableTrips[0]
+  //   );
+  // console.log(availableTrips, "hello-vishal");
+  //   console.log("\n\r__TEST122__ ", availableTrips.pickUpOtp);
+  //   const pickUpOtp = availableTrips.pickUpOtp;
+
   return (
     <View style={styles.container}>
       <View style={styles.subContainer}>
@@ -79,12 +76,12 @@ const OtpSubmit = (props) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.Button}
-            onPress={() => {
+            onPress={() =>
               props.onChange({
                 startTrip: false,
                 otpSubmit: true,
-              });
-            }}
+              })
+            }
           >
             <Text style={styles.ButtonText}>Call Now</Text>
           </TouchableOpacity>
@@ -96,19 +93,17 @@ const OtpSubmit = (props) => {
               backgroundColor: "#f9f9f9",
               paddingLeft: 15,
             }}
-            onChangeText={(e) => setPickupotp(e)}
             clearTextOnFocus={true}
             placeholder="Enter Pickup otp"
           />
           <TouchableOpacity
             style={styles.submitButton}
-            onPress={() => {
-              startTrip();
+            onPress={() =>
               props.onChange({
                 otpSubmit: false,
                 dropLocation: true,
-              });
-            }}
+              })
+            }
           >
             <Text style={styles.ButtonText}>Submit</Text>
           </TouchableOpacity>

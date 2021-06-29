@@ -26,12 +26,46 @@ function ProfileUpdate(props) {
     email: '',
     VehicleType: '',
     Terms:false,
+    validated: false ,
+
   });
   useEffect(() => {
     props.fetchUserDetails(res => {
       console.log('res :: ', res);
     });
   }, []);
+ const isValidEmail = (value) => {
+  let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
+  return reg.test(value)
+
+ }
+  const validation = () => {
+     if(user.fName == ''){
+       alert("Enter You First Name...");
+       return false;
+
+     }
+     if(user.lName == ''){
+      alert("Enter You Last Name...");
+      return false;
+
+    }
+    if (user.email == "") {
+      alert("Please enter valid email");
+      return false;
+    } 
+   if(isValidEmail(user.email))
+    {
+      alert("done");
+      return true;
+
+    }
+    else {
+      alert("invalid email")
+      return false;
+
+    }
+  };
 
   const userDetailsUpdateHandler = () => {
     const payload = {
@@ -40,12 +74,22 @@ function ProfileUpdate(props) {
       email: user.email,
       is_profileUpdated: true,
     };
+     
+   
+    if(validation()){
+
     props.updateUserProfile(payload, res => {
-      if (res.responseCode == 200) {
-        props.navigation.navigate('HomeDrawer');
-      }
+        if (res.responseCode == 200) {
+          props.navigation.navigate('HomeDrawer');
+          return false;
+
+        }
+     
+      
     });
   };
+}
+
   return (
     <View style={styles.container}>
       <View style={styles.headerMain}>

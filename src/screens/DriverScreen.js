@@ -200,21 +200,7 @@ class Driver extends Component {
         </Marker>
       );
     }
-    console.log(
-      this.props.vehicle?.selectedRide?.dropLocation?.coordinates,
-      "vehicle"
-    );
-    console.log(
-      this.props.vehicle?.selectedRide?.pickUpLocation?.coordinates[0],
-      "vehicle"
-    );
 
-    const Pickuplatititue =
-      this.props.vehicle.selectedRide &&
-      this.props.vehicle.selectedRide.pickUpLocation.coordinates;
-    const Pickuplongitue =
-      this.props.vehicle.selectedRide &&
-      this.props.vehicle.selectedRide.pickUpLocation.coordinates;
     return (
       <View style={styles.container}>
         <View style={styles.headerNav}>
@@ -312,7 +298,6 @@ class Driver extends Component {
 const mapStateToProps = (state) => {
   return {
     common: state.common,
-    vehicle: state.vehicle,
   };
 };
 export default connect(mapStateToProps)(Driver);

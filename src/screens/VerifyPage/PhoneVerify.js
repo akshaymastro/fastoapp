@@ -40,7 +40,7 @@ class PhoneVerify extends React.Component {
   }
 
   componentDidMount() {
-    console.log("checking props :: ", this.props);
+    // console.log("checking props :: ", this.props);
     this.setState({ mobileNumber: this.props.route.params.mobileNumber });
     this.resetTimer();
   }
@@ -155,7 +155,7 @@ class PhoneVerify extends React.Component {
     const payload = {
       Mobile: mobileNumber,
       otp: code,
-      userType: "driver",
+      userType: "user",
     };
     console.log("checking payload :: ", payload);
     this.props.verifyOtpHandler(payload, (res) => {

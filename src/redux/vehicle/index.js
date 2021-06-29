@@ -27,24 +27,13 @@ export default (state = INIT_STATE, action) => {
           [action.payload.key]: action.payload.value,
         },
       };
-    case actionTypes.SET_SELECTED_RIDE:
-      return{
-        ...state,
-        selectedRide: action.payload
-      }
-    case actionTypes.NEW_RIDE:
-      return{
-        ...state,
-        currentRide: action.payload
-      }
-    case actionTypes.CURRENT_RIDE:
-      return{
-        ...state,
-        current: action.payload
-      }
     case actionTypes.CLEAR_USER:
       return INIT_STATE;
-
+    case actionTypes.GET_AVAILABLE_TRIPS:
+      return {
+        ...state,
+        availableTrips: action.payload,
+      };
     default:
       return state;
   }

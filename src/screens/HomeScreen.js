@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from "react";
 import {
   Button,
   View,
@@ -8,17 +8,17 @@ import {
   Image,
   TextInput,
   Dimensions,
-} from 'react-native';
-import {usetheme} from '@react-navigation/native';
+} from "react-native";
+import { usetheme } from "@react-navigation/native";
 
-import PassengerScreen from './PassengerScreen';
-import DriverScreen from './DriverScreen';
-import genericContainer from '../component/GenericContainer';
-import Modal from 'react-native-modal';
+import PassengerScreen from "./PassengerScreen";
+import DriverScreen from "./DriverScreen";
+import genericContainer from "../component/GenericContainer";
+import Modal from "react-native-modal";
 
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {showHome} from '../redux/common/actions';
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { showHome } from "../redux/common/actions";
 
 const DriverWithGenericContainer = genericContainer(DriverScreen);
 const PassengerWithGenericContainer = genericContainer(PassengerScreen);
@@ -34,7 +34,7 @@ class HomeScreen extends Component {
   }
 
   displayModal(show) {
-    this.setState({isVisible: show});
+    this.setState({ isVisible: show });
   }
 
   constructor(props) {
@@ -53,28 +53,30 @@ class HomeScreen extends Component {
       return <PassengerWithGenericContainer />;
     }
 
-    const {navigation} = this.props;
+    const { navigation } = this.props;
 
-   // return <DriverWithGenericContainer {...this.props} />;
+    // return <DriverWithGenericContainer {...this.props} />;
 
-   return (<View> 
-            <Button 
-        title="Passenger"
-        onPress={() => this.setState({ isPassenger: true })}
-         />
+    return (
+      <View>
         <Button
-         title="Driver"
-         onPress={() => this.setState({ isDriver: true })}
-          />
-          </View>)
+          title="Passenger"
+          onPress={() => this.setState({ isPassenger: true })}
+        />
+        <Button
+          title="Driver"
+          onPress={() => this.setState({ isDriver: true })}
+        />
+      </View>
+    );
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {};
 };
 
-export const mapDispatchToProps = dispatch => ({
+export const mapDispatchToProps = (dispatch) => ({
   showHome: bindActionCreators(showHome, dispatch),
   // verifyOtpApiCheck: bindActionCreators(verifyOtpApi, dispatch),
   // loginApiPhoneCheck: bindActionCreators(loginApiPhoneCheck, dispatch),
@@ -82,7 +84,7 @@ export const mapDispatchToProps = dispatch => ({
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);
 
-const {height} = Dimensions.get('screen');
+const { height } = Dimensions.get("screen");
 const height_logo = height * 0.18;
 
 const styles = StyleSheet.create({
@@ -91,14 +93,14 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   button: {
-    display: 'flex',
+    display: "flex",
     height: 40,
     borderRadius: 6,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    backgroundColor: 'orange',
-    shadowColor: '#2AC062',
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    backgroundColor: "orange",
+    shadowColor: "#2AC062",
     shadowOpacity: 0.5,
     shadowOffset: {
       height: 10,
@@ -109,19 +111,19 @@ const styles = StyleSheet.create({
   },
 
   buttonText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 22,
   },
 
   text: {
     fontSize: 24,
-    textAlign: 'center',
+    textAlign: "center",
     padding: 15,
   },
   closeText: {
     fontSize: 24,
-    color: '#00479e',
-    textAlign: 'center',
+    color: "#00479e",
+    textAlign: "center",
   },
   formText: {
     fontSize: 18,
@@ -130,8 +132,8 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   header: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   image: {
     width: height_logo,
@@ -143,7 +145,7 @@ const styles = StyleSheet.create({
     margin: 0,
   },
   headerNav: {
-    justifyContent: 'flex-start',
+    justifyContent: "flex-start",
     padding: 10,
   },
 });

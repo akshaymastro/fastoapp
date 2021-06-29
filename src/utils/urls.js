@@ -1,1 +1,1 @@
-export const baseUrl = 'https://fasto-backend.herokuapp.com';
+export const baseUrl = "http://10.0.2.2:4000";

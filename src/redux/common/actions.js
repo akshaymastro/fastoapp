@@ -1,5 +1,5 @@
-import actionTypes from './types';
-import RestClient from '../../utils/RestClient';
+import actionTypes from "./types";
+import RestClient from "../../utils/RestClient";
 
 export function showHome(params) {
   return (dispatch, getState) => {
@@ -17,7 +17,12 @@ export function saveApiToken(params) {
     });
   };
 }
-
+export const setDriverGeoLocation = (params) => (dispatch) => {
+  dispatch({
+    type: actionTypes.SET_LAT_LONG,
+    payload: params,
+  });
+};
 export function showLoading() {
   return {
     type: actionTypes.SHOW_LOADING,

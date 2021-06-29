@@ -3,7 +3,12 @@ import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
 
 import {Divider} from 'react-native-paper';
 
-const AboutVehicle = params => {
+const AboutVehicle = (props) => {
+
+  console.log("about",props);
+  
+  
+
   return (
     <View style={styles.container}>
       {/* Top */}
@@ -97,7 +102,7 @@ const AboutVehicle = params => {
         <TouchableOpacity
           style={styles.button}
           onPress={() =>
-            params.setselctedVehical({
+            props.onChange({
               aboutVehicle: false,
             })
           }>

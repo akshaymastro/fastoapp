@@ -1,0 +1,265 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.fastodriver"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="21"
+9        android:targetSdkVersion="29" />
+10
+11    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+11-->/Users/akshaysharma/akshay/projects/fasto-driver-app/android/app/src/debug/AndroidManifest.xml:5:5-77
+11-->/Users/akshaysharma/akshay/projects/fasto-driver-app/android/app/src/debug/AndroidManifest.xml:5:22-75
+12    <uses-permission android:name="android.permission.INTERNET" />
+12-->/Users/akshaysharma/akshay/projects/fasto-driver-app/android/app/src/main/AndroidManifest.xml:4:5-67
+12-->/Users/akshaysharma/akshay/projects/fasto-driver-app/android/app/src/main/AndroidManifest.xml:4:22-64
+13    <uses-permission android:name="android.hardware.location" />
+13-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:29:5-65
+13-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:29:22-62
+14    <uses-permission android:name="android.permission.WAKE_LOCK" />
+14-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:31:5-68
+14-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:31:22-65
+15    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+15-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:32:5-79
+15-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:32:22-76
+16    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+16-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:33:5-81
+16-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:33:22-78
+17    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+17-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:34:5-79
+17-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:34:22-76
+18    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
+18-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:35:5-89
+18-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:35:22-86
+19    <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
+19-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:36:5-94
+19-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:36:22-91
+20    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+20-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:37:5-81
+20-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:37:22-78
+21    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+21-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:38:5-77
+21-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:38:22-74
+22    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+22-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:39:5-78
+22-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:39:22-75
+23    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+23-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:40:5-80
+23-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:40:22-77
+24    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+24-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:41:5-77
+24-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:41:22-74
+25    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!-- Required to access Google Play Licensing -->
+25-->[:react-native-community_netinfo] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@react-native-community/netinfo/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:10:5-76
+25-->[:react-native-community_netinfo] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@react-native-community/netinfo/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:10:22-73
+26    <uses-permission android:name="com.android.vending.CHECK_LICENSE" /> <!-- Required to read and write the expansion files on shared storage -->
+26-->[:rn-fetch-blob] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/rn-fetch-blob/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:12:5-73
+26-->[:rn-fetch-blob] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/rn-fetch-blob/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:12:22-70
+27    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+27-->[:rn-fetch-blob] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/rn-fetch-blob/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:33:5-81
+27-->[:rn-fetch-blob] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/rn-fetch-blob/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:33:22-78
+28
+29    <uses-feature
+29-->[com.google.android.gms:play-services-maps:17.0.0] /Users/akshaysharma/.gradle/caches/transforms-2/files-2.1/faf3edd0a0a40b32e6c32885cc662e42/jetified-play-services-maps-17.0.0/AndroidManifest.xml:26:5-28:35
+30        android:glEsVersion="0x00020000"
+30-->[com.google.android.gms:play-services-maps:17.0.0] /Users/akshaysharma/.gradle/caches/transforms-2/files-2.1/faf3edd0a0a40b32e6c32885cc662e42/jetified-play-services-maps-17.0.0/AndroidManifest.xml:27:9-41
+31        android:required="true" /> <!-- Required by older versions of Google Play services to create IID tokens -->
+31-->[com.google.android.gms:play-services-maps:17.0.0] /Users/akshaysharma/.gradle/caches/transforms-2/files-2.1/faf3edd0a0a40b32e6c32885cc662e42/jetified-play-services-maps-17.0.0/AndroidManifest.xml:28:9-32
+32    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+32-->[com.google.android.gms:play-services-iid:17.0.0] /Users/akshaysharma/.gradle/caches/transforms-2/files-2.1/e18b3ef1604371e7e10a2586fcf5f032/jetified-play-services-iid-17.0.0/AndroidManifest.xml:23:5-82
+32-->[com.google.android.gms:play-services-iid:17.0.0] /Users/akshaysharma/.gradle/caches/transforms-2/files-2.1/e18b3ef1604371e7e10a2586fcf5f032/jetified-play-services-iid-17.0.0/AndroidManifest.xml:23:22-79
+33    <uses-permission android:name="com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE" />
+33-->[com.android.installreferrer:installreferrer:1.1.2] /Users/akshaysharma/.gradle/caches/transforms-2/files-2.1/150d95ff2179d66a1b5aeef5973627bb/jetified-installreferrer-1.1.2/AndroidManifest.xml:9:5-110
+33-->[com.android.installreferrer:installreferrer:1.1.2] /Users/akshaysharma/.gradle/caches/transforms-2/files-2.1/150d95ff2179d66a1b5aeef5973627bb/jetified-installreferrer-1.1.2/AndroidManifest.xml:9:22-107
+34
+35    <application
+35-->/Users/akshaysharma/akshay/projects/fasto-driver-app/android/app/src/main/AndroidManifest.xml:6:5-30:19
+36        android:name="com.fastodriver.MainApplication"
+36-->/Users/akshaysharma/akshay/projects/fasto-driver-app/android/app/src/main/AndroidManifest.xml:7:7-38
+37        android:allowBackup="false"
+37-->/Users/akshaysharma/akshay/projects/fasto-driver-app/android/app/src/main/AndroidManifest.xml:11:7-34
+38        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+38-->[androidx.core:core:1.2.0] /Users/akshaysharma/.gradle/caches/transforms-2/files-2.1/1a3234669c33f9f4072a7bfc84af0390/core-1.2.0/AndroidManifest.xml:24:18-86
+39        android:debuggable="true"
+40        android:icon="@mipmap/ic_launcher"
+40-->/Users/akshaysharma/akshay/projects/fasto-driver-app/android/app/src/main/AndroidManifest.xml:9:7-41
+41        android:label="@string/app_name"
+41-->/Users/akshaysharma/akshay/projects/fasto-driver-app/android/app/src/main/AndroidManifest.xml:8:7-39
+42        android:roundIcon="@mipmap/ic_launcher_round"
+42-->/Users/akshaysharma/akshay/projects/fasto-driver-app/android/app/src/main/AndroidManifest.xml:10:7-52
+43        android:testOnly="true"
+44        android:theme="@style/AppTheme"
+44-->/Users/akshaysharma/akshay/projects/fasto-driver-app/android/app/src/main/AndroidManifest.xml:12:7-38
+45        android:usesCleartextTraffic="true" >
+45-->/Users/akshaysharma/akshay/projects/fasto-driver-app/android/app/src/debug/AndroidManifest.xml:8:9-44
+46        <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+46-->/Users/akshaysharma/akshay/projects/fasto-driver-app/android/app/src/debug/AndroidManifest.xml:11:9-86
+46-->/Users/akshaysharma/akshay/projects/fasto-driver-app/android/app/src/debug/AndroidManifest.xml:11:19-83
+47        <activity
+47-->/Users/akshaysharma/akshay/projects/fasto-driver-app/android/app/src/main/AndroidManifest.xml:13:7-23:18
+48            android:name="com.fastodriver.MainActivity"
+48-->/Users/akshaysharma/akshay/projects/fasto-driver-app/android/app/src/main/AndroidManifest.xml:14:9-37
+49            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
+49-->/Users/akshaysharma/akshay/projects/fasto-driver-app/android/app/src/main/AndroidManifest.xml:16:9-86
+50            android:label="@string/app_name"
+50-->/Users/akshaysharma/akshay/projects/fasto-driver-app/android/app/src/main/AndroidManifest.xml:15:9-41
+51            android:launchMode="singleTask"
+51-->/Users/akshaysharma/akshay/projects/fasto-driver-app/android/app/src/main/AndroidManifest.xml:17:9-40
+52            android:windowSoftInputMode="adjustResize" >
+52-->/Users/akshaysharma/akshay/projects/fasto-driver-app/android/app/src/main/AndroidManifest.xml:18:9-51
+53            <intent-filter>
+53-->/Users/akshaysharma/akshay/projects/fasto-driver-app/android/app/src/main/AndroidManifest.xml:19:9-22:25
+54                <action android:name="android.intent.action.MAIN" />
+54-->/Users/akshaysharma/akshay/projects/fasto-driver-app/android/app/src/main/AndroidManifest.xml:20:13-65
+54-->/Users/akshaysharma/akshay/projects/fasto-driver-app/android/app/src/main/AndroidManifest.xml:20:21-62
+55
+56                <category android:name="android.intent.category.LAUNCHER" />
+56-->/Users/akshaysharma/akshay/projects/fasto-driver-app/android/app/src/main/AndroidManifest.xml:21:13-73
+56-->/Users/akshaysharma/akshay/projects/fasto-driver-app/android/app/src/main/AndroidManifest.xml:21:23-70
+57            </intent-filter>
+58        </activity>
+59
+60        <meta-data
+60-->/Users/akshaysharma/akshay/projects/fasto-driver-app/android/app/src/main/AndroidManifest.xml:24:8-26:63
+61            android:name="com.google.android.geo.API_KEY"
+61-->/Users/akshaysharma/akshay/projects/fasto-driver-app/android/app/src/main/AndroidManifest.xml:25:6-51
+62            android:value="AIzaSyCdX116ggJ_oadelay7Q5Sqme72S046Ch8" />
+62-->/Users/akshaysharma/akshay/projects/fasto-driver-app/android/app/src/main/AndroidManifest.xml:26:6-61
+63
+64        <uses-library
+64-->/Users/akshaysharma/akshay/projects/fasto-driver-app/android/app/src/main/AndroidManifest.xml:28:9-87
+65            android:name="org.apache.http.legacy"
+65-->/Users/akshaysharma/akshay/projects/fasto-driver-app/android/app/src/main/AndroidManifest.xml:28:23-60
+66            android:required="false" />
+66-->/Users/akshaysharma/akshay/projects/fasto-driver-app/android/app/src/main/AndroidManifest.xml:28:61-85
+67
+68        <service
+68-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:44:9-55:19
+69            android:name="com.marianhello.bgloc.sync.SyncService"
+69-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:45:13-66
+70            android:exported="true"
+70-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:46:13-36
+71            android:process=":sync" >
+71-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:47:13-36
+72            <intent-filter>
+72-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:48:13-50:29
+73                <action android:name="android.content.SyncAdapter" />
+73-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:49:17-70
+73-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:49:25-67
+74            </intent-filter>
+75
+76            <meta-data
+76-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:52:13-54:55
+77                android:name="android.content.SyncAdapter"
+77-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:53:17-59
+78                android:resource="@xml/syncadapter" />
+78-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:54:17-52
+79        </service>
+80        <service android:name="com.marianhello.bgloc.sync.AuthenticatorService" >
+80-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:56:9-64:19
+80-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:56:18-80
+81            <intent-filter>
+81-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:57:13-59:29
+82                <action android:name="android.accounts.AccountAuthenticator" />
+82-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:58:17-80
+82-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:58:25-77
+83            </intent-filter>
+84
+85            <meta-data
+85-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:61:13-63:57
+86                android:name="android.accounts.AccountAuthenticator"
+86-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:62:17-69
+87                android:resource="@xml/authenticator" />
+87-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:63:17-54
+88        </service>
+89
+90        <provider
+90-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:66:9-70:39
+91            android:name="com.marianhello.bgloc.data.provider.LocationContentProvider"
+91-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:67:13-87
+92            android:authorities="@string/mauron85_bgloc_content_authority"
+92-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:68:13-75
+93            android:exported="false"
+93-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:69:13-37
+94            android:syncable="true" />
+94-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:70:13-36
+95
+96        <service
+96-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:72:9-75:40
+97            android:name="com.marianhello.bgloc.service.LocationServiceImpl"
+97-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:73:13-77
+98            android:enabled="true"
+98-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:74:13-35
+99            android:exported="false" />
+99-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:75:13-37
+100        <service
+100-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:76:9-79:40
+101            android:name="com.marianhello.bgloc.react.headless.HeadlessService"
+101-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:77:13-80
+102            android:enabled="true"
+102-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:78:13-35
+103            android:exported="false" />
+103-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:79:13-37
+104
+105        <receiver
+105-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:81:9-88:20
+106            android:name="com.marianhello.bgloc.BootCompletedReceiver"
+106-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:82:13-71
+107            android:enabled="true"
+107-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:83:13-35
+108            android:exported="true" >
+108-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:84:13-36
+109            <intent-filter>
+109-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:85:13-87:29
+110                <action android:name="android.intent.action.BOOT_COMPLETED" />
+110-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:86:17-79
+110-->[:@mauron85_react-native-background-geolocation] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/@mauron85/react-native-background-geolocation/android/lib/build/intermediates/library_manifest/debug/AndroidManifest.xml:86:25-76
+111            </intent-filter>
+112        </receiver>
+113
+114        <provider
+114-->[:rn-fetch-blob] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/rn-fetch-blob/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:36:9-44:20
+115            android:name="com.RNFetchBlob.Utils.FileProvider"
+115-->[:rn-fetch-blob] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/rn-fetch-blob/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:37:13-62
+116            android:authorities="com.fastodriver.provider"
+116-->[:rn-fetch-blob] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/rn-fetch-blob/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:38:13-60
+117            android:exported="false"
+117-->[:rn-fetch-blob] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/rn-fetch-blob/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:39:13-37
+118            android:grantUriPermissions="true" >
+118-->[:rn-fetch-blob] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/rn-fetch-blob/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:40:13-47
+119            <meta-data
+119-->[:rn-fetch-blob] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/rn-fetch-blob/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:41:13-43:58
+120                android:name="android.support.FILE_PROVIDER_PATHS"
+120-->[:rn-fetch-blob] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/rn-fetch-blob/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:42:17-67
+121                android:resource="@xml/provider_paths" />
+121-->[:rn-fetch-blob] /Users/akshaysharma/akshay/projects/fasto-driver-app/node_modules/rn-fetch-blob/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:43:17-55
+122        </provider>
+123
+124        <activity
+124-->[com.google.android.gms:play-services-base:17.2.1] /Users/akshaysharma/.gradle/caches/transforms-2/files-2.1/b14783c54f0a0561f542100569b19f88/jetified-play-services-base-17.2.1/AndroidManifest.xml:23:9-26:75
+125            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+125-->[com.google.android.gms:play-services-base:17.2.1] /Users/akshaysharma/.gradle/caches/transforms-2/files-2.1/b14783c54f0a0561f542100569b19f88/jetified-play-services-base-17.2.1/AndroidManifest.xml:24:13-79
+126            android:exported="false"
+126-->[com.google.android.gms:play-services-base:17.2.1] /Users/akshaysharma/.gradle/caches/transforms-2/files-2.1/b14783c54f0a0561f542100569b19f88/jetified-play-services-base-17.2.1/AndroidManifest.xml:25:13-37
+127            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+127-->[com.google.android.gms:play-services-base:17.2.1] /Users/akshaysharma/.gradle/caches/transforms-2/files-2.1/b14783c54f0a0561f542100569b19f88/jetified-play-services-base-17.2.1/AndroidManifest.xml:26:13-72
+128
+129        <meta-data
+129-->[com.google.android.gms:play-services-basement:17.2.1] /Users/akshaysharma/.gradle/caches/transforms-2/files-2.1/e6798b60eadf3bac0dda44bbd7c5242e/jetified-play-services-basement-17.2.1/AndroidManifest.xml:23:9-25:69
+130            android:name="com.google.android.gms.version"
+130-->[com.google.android.gms:play-services-basement:17.2.1] /Users/akshaysharma/.gradle/caches/transforms-2/files-2.1/e6798b60eadf3bac0dda44bbd7c5242e/jetified-play-services-basement-17.2.1/AndroidManifest.xml:24:13-58
+131            android:value="@integer/google_play_services_version" />
+131-->[com.google.android.gms:play-services-basement:17.2.1] /Users/akshaysharma/.gradle/caches/transforms-2/files-2.1/e6798b60eadf3bac0dda44bbd7c5242e/jetified-play-services-basement-17.2.1/AndroidManifest.xml:25:13-66
+132
+133        <activity
+133-->[com.intentfilter:android-permissions:0.1.7] /Users/akshaysharma/.gradle/caches/transforms-2/files-2.1/0111c783ca959fbaccd16d020f707ff8/jetified-android-permissions-0.1.7/AndroidManifest.xml:12:9-15:59
+134            android:name="com.intentfilter.androidpermissions.PermissionsActivity"
+134-->[com.intentfilter:android-permissions:0.1.7] /Users/akshaysharma/.gradle/caches/transforms-2/files-2.1/0111c783ca959fbaccd16d020f707ff8/jetified-android-permissions-0.1.7/AndroidManifest.xml:13:13-83
+135            android:excludeFromRecents="true"
+135-->[com.intentfilter:android-permissions:0.1.7] /Users/akshaysharma/.gradle/caches/transforms-2/files-2.1/0111c783ca959fbaccd16d020f707ff8/jetified-android-permissions-0.1.7/AndroidManifest.xml:14:13-46
+136            android:theme="@style/AppTheme.Transparent" />
+136-->[com.intentfilter:android-permissions:0.1.7] /Users/akshaysharma/.gradle/caches/transforms-2/files-2.1/0111c783ca959fbaccd16d020f707ff8/jetified-android-permissions-0.1.7/AndroidManifest.xml:15:13-56
+137    </application>
+138
+139</manifest>

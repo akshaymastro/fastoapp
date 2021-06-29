@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Button,
   View,
@@ -8,19 +8,24 @@ import {
   Image,
   TextInput,
   Dimensions,
+  Picker,
+  CheckBox
 } from 'react-native';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {fetchUserDetails, updateUserProfile} from '../../redux/auth/actions';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { fetchUserDetails, updateUserProfile } from '../../redux/auth/actions';
+import LinearGradient from 'react-native-linear-gradient';
 
-const {height} = Dimensions.get('screen');
-const height_logo = height * 0.18;
+const { height } = Dimensions.get('screen');
+const height_logo = height * 0.19;
 
 function ProfileUpdate(props) {
   const [user, setUser] = useState({
     fName: '',
     lName: '',
     email: '',
+    VehicleType: '',
+    Terms:false,
   });
   useEffect(() => {
     props.fetchUserDetails(res => {
@@ -42,12 +47,20 @@ function ProfileUpdate(props) {
     });
   };
   return (
-    <View style={{paddingTop: 50}}>
-      <View style={styles.header}>
-        <Text style={styles.text}>Welcome To Fasto</Text>
-        <Image source={require('../../assets/logo.png')} style={styles.image} />
+    <View style={styles.container}>
+      <View style={styles.headerMain}>
+        <LinearGradient
+          colors={['#222546', '#3a3e66', '#606598']} start={{ x: .4, y: 0 }} end={{ x: 1.5, y: 0 }}
+          style={styles.linearGradientFull} >
+
+          <View style={styles.aboutHeader}>
+            <Text style={styles.uinTextBig} > Pilot</Text>
+            <Text style={styles.uinText} > Registration Form</Text>
+          </View>
+        </LinearGradient>
       </View>
-      <View style={{paddingHorizontal: 20}}>
+
+      <View style={styles.footer}>
         <View>
           <View style={styles.inputField}>
             <Text style={styles.formText}>First Name</Text>
@@ -104,6 +117,44 @@ function ProfileUpdate(props) {
               }}
             />
           </View>
+          <View style={styles.inputFieldVehicle}>
+            <Text style={styles.formText}>Vehicle Type</Text>
+            <Picker
+              selectedValue={user.VehicleType}
+              style={{ height: 50, width: 150 }}
+              onValueChange={(itemValue, itemIndex) => setUser(itemValue)}
+            >
+              <Picker.Item label="Tata Ace" value="Tata Ace" />
+              <Picker.Item label="Tata Ape" value="Tata Ape" />
+              <Picker.Item label="Mahindra Pickup" value="Mahindra Pickup" />
+            </Picker>
+          </View>
+          <View style={styles.upload}>
+            <View style={styles.uploadAadharView}>
+              <TouchableOpacity style={styles.uploadAadhar}>
+                <Image style={styles.uploadAadharImage}
+                  source={require('../../assets/icon/upload.png')}
+                />
+                <Text style={styles.uploadText}>Upload Aadhar Card</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.uploadAadhar}>
+                <Image style={styles.uploadAadharImage}
+                  source={require('../../assets/icon/upload.png')}
+                />
+                <Text style={styles.uploadText}>Upload R. C.</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.uploadAadhar}>
+                <Image style={styles.uploadAadharImage}
+                  source={require('../../assets/icon/upload.png')}
+                />
+                <Text style={styles.uploadText}>Upload Driving Licence</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View>
+          
+          </View>
+
         </View>
 
         <TouchableOpacity
@@ -135,6 +186,31 @@ export default connect(mapStateToProps, mapDispatchToProps)(ProfileUpdate);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  headerMain: {
+  },
+  linearGradient: {
+    padding: 10,
+    borderRadius: 50,
+    width: '50%'
+  },
+  linearGradientFull: {
+    height: 150,
+    justifyContent: "center",
+    paddingLeft: 20
+  },
+  uinText: {
+    fontWeight: 'bold',
+    color: 'white',
+    fontSize: 21
+  },
+  uinTextBig: {
+    fontWeight: 'bold',
+    color: 'white',
+    fontSize: 30
+  },
+  aboutHeader: {
+    flexDirection: "column",
   },
   button: {
     display: 'flex',
@@ -174,7 +250,11 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
   },
   inputField2: {
-    marginTop: 15,
+    marginTop: 5,
+  },
+  inputFieldVehicle: {
+    flexDirection: "row",
+    alignItems: "center"
   },
   header: {
     justifyContent: 'center',
@@ -193,4 +273,30 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     padding: 10,
   },
+  footer: {
+    paddingHorizontal: 20,
+    marginTop: 10
+  },
+  uploadAadharView: {
+   
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+  },
+  uploadAadhar : {
+      backgroundColor: "#f9f9f9",
+      marginTop: '7%',
+      width:100,
+      height: 100,
+      justifyContent: 'flex-start',
+      alignItems: 'center',
+  },
+  uploadAadharImage :  {
+      resizeMode: 'contain',
+      
+  },
+  uploadText:{
+    textAlign:"center"
+  }
+
 });

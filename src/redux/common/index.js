@@ -1,12 +1,12 @@
-import actionTypes from './types';
-import {PURGE} from 'redux-persist';
+import actionTypes from "./types";
+import { PURGE } from "redux-persist";
 
 // initial state
 const INIT_STATE = {
   loading: false,
   showHome: false,
-  apiToken: '',
-  userDetails: '',
+  apiToken: "",
+  userDetails: "",
 };
 
 export default function common(state = INIT_STATE, action) {
@@ -16,6 +16,15 @@ export default function common(state = INIT_STATE, action) {
         ...state,
         loading: true,
       };
+    case actionTypes.SET_LAT_LONG: {
+      return {
+        ...state,
+        location: {
+          lat: action.payload.lat,
+          long: action.payload.long,
+        },
+      };
+    }
     case actionTypes.HIDE_LOADING:
       return {
         ...state,

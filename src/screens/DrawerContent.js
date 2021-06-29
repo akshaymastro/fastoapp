@@ -18,6 +18,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 
 import {bindActionCreators} from 'redux';
 import {showHome} from '../redux/common/actions';
+import { CommonActions } from "@react-navigation/native";
 
 import {AuthContext} from '../component/context';
 import {useSelector, useDispatch, connect} from 'react-redux';
@@ -58,7 +59,18 @@ export function DrawerContent(props) {
   //    console.log('Drawer Screen' + UserData)
   const signOut = () => {
     props.showHome(false);
-    props.navigation.navigate('SignInScreen');
+   // props.navigation.navigate('SignInScreen');
+   props.navigation.dispatch(
+    CommonActions.reset({
+      index: 0,
+      routes: [
+        {
+          name: "SignInScreen",
+          params: null ,
+        },
+      ],
+    })
+  );
   };
 
   return (
@@ -104,14 +116,7 @@ export function DrawerContent(props) {
               }}
             />
 
-            <DrawerItem
-              label="About"
-              style={styles.about}
-              labelStyle={{color: '#000', fontSize: 16, fontWeight: 'bold'}}
-              onPress={() => {
-                props.navigation.navigate('AboutScreen');
-              }}
-            />
+            
             <DrawerItem
               style={styles.about}
               labelStyle={{color: '#000', fontSize: 16, fontWeight: 'bold'}}
@@ -129,6 +134,14 @@ export function DrawerContent(props) {
               }}
             />
             <DrawerItem
+              label="Accounts"
+              style={styles.about}
+              labelStyle={{color: '#000', fontSize: 16, fontWeight: 'bold'}}
+              onPress={() => {
+                props.navigation.navigate('AboutScreen');
+              }}
+            />
+            <DrawerItem
               style={styles.about}
               labelStyle={{color: '#000', fontSize: 16, fontWeight: 'bold'}}
               label="Support"
@@ -139,19 +152,12 @@ export function DrawerContent(props) {
             <DrawerItem
               style={styles.about}
               labelStyle={{color: '#000', fontSize: 16, fontWeight: 'bold'}}
-              label="How To Book"
+              label="How To Get Ride"
               onPress={() => {
                 props.navigation.navigate('SettingsScreen');
               }}
             />
-            <DrawerItem
-              style={styles.about}
-              labelStyle={{color: '#000', fontSize: 16, fontWeight: 'bold'}}
-              label="Wallet"
-              onPress={() => {
-                props.navigation.navigate('SettingsScreen');
-              }}
-            />
+            
           </Drawer.Section>
           <Drawer.Section>
             <TouchableRipple
@@ -266,7 +272,6 @@ const styles = StyleSheet.create({
   },
   invite: {
     backgroundColor: '#3b316e',
-    alignItems: 'center',
     borderRadius: 50,
 
     fontWeight: 'bold',

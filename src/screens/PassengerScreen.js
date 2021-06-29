@@ -1,4 +1,4 @@
-import React, {Component, useState, useRef} from 'react';
+import React, { Component, useState, useRef } from "react";
 import {
   StyleSheet,
   View,
@@ -13,38 +13,50 @@ import {
   ScrollView,
   Dimensions,
   Platform,
-} from 'react-native';
-import {usetheme} from '@react-navigation/native';
+  BackHandler,
+  Alert,
+} from "react-native";
+import { usetheme } from "@react-navigation/native";
 
-import LinearGradient from 'react-native-linear-gradient';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import Feather from 'react-native-vector-icons/Feather';
-import * as Animatable from 'react-native-animatable';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {useTheme} from '../node_modules/react-native-paper';
+import LinearGradient from "react-native-linear-gradient";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import Feather from "react-native-vector-icons/Feather";
+import * as Animatable from "react-native-animatable";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import { useTheme } from "../node_modules/react-native-paper";
 import MapView, {
   PROVIDER_GOOGLE,
   Marker,
   Callout,
   Polyline,
-} from 'react-native-maps';
-import Geolocation from '@react-native-community/geolocation';
-import apiKey from './google_api_key';
-import _ from 'lodash';
-import socketIO from 'socket.io-client';
-import BottomButton from '../component/BottomButton';
-import Select2 from 'react-native-select-two';
-import RBSheet from 'react-native-raw-bottom-sheet';
-import {Divider, List, RadioButton} from 'react-native-paper';
-import Menu, {MenuItem, MenuDivider} from 'react-native-material-menu';
-import Geocoder from 'react-native-geocoding';
+} from "react-native-maps";
+import Geolocation from "@react-native-community/geolocation";
+import apiKey from "./google_api_key";
+import _ from "lodash";
+import socketIO from "socket.io-client";
+import BottomButton from "../component/BottomButton";
+import Select2 from "react-native-select-two";
+import RBSheet from "react-native-raw-bottom-sheet";
+import Menu, { MenuItem, MenuDivider } from "react-native-material-menu";
+import Geocoder from "react-native-geocoding";
 
-import PassengerBottom from './Passenger/passengerBottom';
-import PickupContact from './Passenger/PickupContact';
-import DeliverContact from './Passenger/DeliverContact';
-import SelectCategory from './Passenger/SelectCategory';
+import PassengerBottom from "./Passenger/passengerBottom";
+import PickupContact from "./Passenger/PickupContact";
+import DeliverContact from "./Passenger/DeliverContact";
+import SelectCategory from "./Passenger/SelectCategory";
+import SearchRide from "./Passenger/SearchRide";
+import PaymentMethod from "./Passenger/PaymentMethod";
+import BookingConfirm from "./Passenger/BookingConfirm";
+import BookingConfirmMessage from "./Passenger/BookingConfirmMessage";
+import CancelTrip from "./Passenger/CancelTrip";
+import io from "socket.io-client";
+import { connect } from "react-redux";
+import { setRideData, bookRide, getCurrentRide } from "../redux/vehicle/action";
+import AsyncStorage from "@react-native-community/async-storage";
+import jwtDecode from "jwt-decode";
+const socket = io("10.0.2.2:4000/");
 
-export default class PassengerScreen extends Component {
+class PassengerScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -57,9 +69,20 @@ export default class PassengerScreen extends Component {
       pickupContact: false,
       selectCategory: false,
       passengerBottom: true,
-      RecInfo: '8909330839',
-      RecInfo2: 'Vikas Gupta',
-      pickupDestination: '',
+      paymentMethod: false,
+      searchRide: false,
+      bookingConfirm: false,
+      bookingConfirmMessage: false,
+      updatedRide: {},
+      cancelTrip: false,
+      cancelRideReason: {
+        id: "",
+        name: "",
+        Message: "",
+      },
+      RecInfo: "8909330839",
+      RecInfo2: "Vikas Gupta",
+      pickupDestination: "",
       pickUpLocation: {
         latitude: 12.9,
         longitude: 12.9,
@@ -67,29 +90,51 @@ export default class PassengerScreen extends Component {
         longitudeDelta: 0.0161,
       },
       VehicalSelected: {
-        name: '',
-        time: '',
-        price: '',
-        id: '',
-        checked: 'first',
-        setChecked: '',
+        name: "",
+        time: "",
+        price: "",
+        id: "",
+        checked: "first",
+        setChecked: "",
       },
       CouponInputVisible: false,
-      coupon: '',
+      coupon: "",
     };
     this.onChangeDestinationDebounced = _.debounce(
       this.onChangeDestination,
-      1000,
+      1000
     );
     this.onChangePickupDestinationDebounced = _.debounce(
       this.onChangePickupDestination,
-      1000,
+      1000
     );
   }
 
+  onBackPress = () => {
+    BackHandler.exitApp();
+    // Alert.alert(
+    //   "Do you wish to exit the app?",
+    //   "exit app",
+    //   [
+    //     {
+    //       text: "Cancel",
+    //       onPress: () => null,
+    //       style: "cancel",
+    //     },
+    //     {
+    //       text: "Yes",
+    //       onPress: () => {
+    //         BackHandler.exitApp();
+    //       },
+    //     },
+    //   ],
+    //   { cancelable: false }
+    // );
+  };
+
   componentDidMount() {
     Geocoder.init(apiKey); // use a valid API key
-
+    BackHandler.addEventListener("hardwareBackPress", this.onBackPress);
     const lat = this.props.latitude;
     const long = this.props.longitude;
     const latLong = {
@@ -101,10 +146,30 @@ export default class PassengerScreen extends Component {
       this.setState({
         pickUpLocation: latLong,
       });
-    console.log('checking props :: ', this.props);
+    console.log("checking props :: ", this.props);
+    const token = jwtDecode(this.props.common.apiToken);
+    console.log(token.user);
+    this.props.setRideData({ key: "ByUserID", value: token.user._id });
+    this.props.setRideData({ key: "passengerBottom", value: true });
+    this.props.setRideData({ key: "pickupContact", value: false });
     // this.props.changeLocationPickUp(latLong);
   }
   componentDidUpdate(preProps, nextProps) {
+    // setTimeout(() => {
+    //   if (
+    //     this.props.vehicle?.currentRide?._id &&
+    //     this.props.vehicle?.currentRide?.status == "pending"
+    //   ) {
+    //     socket.on("connection", (res) => {
+    //       console.log("responce connection", res);
+    //     });
+    //     socket.emit("getCurrentRide", {
+    //       id: this.props.vehicle?.currentRide?._id,
+    //     });
+    //     this.props.getCurrentRide(this.props.vehicle?.currentRide?._id);
+    //   }
+    // }, 10000);
+
     const lat = this.props.latitude;
     const long = this.props.longitude;
     if (
@@ -135,7 +200,7 @@ export default class PassengerScreen extends Component {
     });
   };
 
-  setChecked = val => {
+  setChecked = (val) => {
     this.setState({
       setChecked: val,
     });
@@ -143,20 +208,20 @@ export default class PassengerScreen extends Component {
   };
 
   openModal() {
-    this.setState({isModalVisible: true});
+    this.setState({ isModalVisible: true });
   }
 
   closeModal() {
-    this.setState({isModalVisible: false});
+    this.setState({ isModalVisible: false });
   }
 
   ApplyCoupon = () => {
-    this.setState({CouponInputVisible: true});
+    this.setState({ CouponInputVisible: true });
   };
 
   _menu = null;
 
-  setMenuRef = ref => {
+  setMenuRef = (ref) => {
     this._menu = ref;
   };
 
@@ -171,14 +236,14 @@ export default class PassengerScreen extends Component {
   async onChangePickupDestination(pickupDestination) {
     const apiUrl = `https://maps.googleapis.com/maps/api/place/autocomplete/json?key=${apiKey}
     &input=${pickupDestination}&location=${this.props.latitude},${this.props.longitude}&radius=2000`;
-    console.log(' This is pickup Destination url', apiUrl);
+    console.log(" This is pickup Destination url", apiUrl);
     try {
       const result = await fetch(apiUrl);
       const json = await result.json();
       this.setState({
         pickupPredictions: json.predictions,
       });
-      console.log('onChangePickupDestination ', json.predictions);
+      console.log("onChangePickupDestination ", json.predictions);
       //   Geocoder.from()
       // .then(json => {
       // 	var location = json.results[0].geometry.location;
@@ -190,7 +255,7 @@ export default class PassengerScreen extends Component {
     }
   }
 
-  handleRegionChange = data => {
+  handleRegionChange = (data) => {
     console.log(data);
   };
 
@@ -204,28 +269,26 @@ export default class PassengerScreen extends Component {
       this.setState({
         predictions: json.predictions,
       });
-      console.log(json);
+      console.log(json, "hashdh");
     } catch (err) {
       console.error(err);
     }
   }
 
   async requestDriver() {
-    this.setState({lookingForDriver: true});
-    var socket = socketIO.connect(
-      'https://CanineHopefulFonts--thevisionclicks.repl.co',
-    );
+    this.setState({ lookingForDriver: true });
+    var socket = socketIO.connect("https://fasto-backend.herokuapp.com");
 
-    socket.on('connect', () => {
-      console.log('client connected');
+    socket.on("connect", () => {
+      console.log("client connected");
       //Request a taxi!
-      socket.emit('taxiRequest', this.props.routeResponse);
+      socket.emit("taxiRequest", this.props.routeResponse);
     });
 
-    socket.on('driverLocation', driverLocation => {
+    socket.on("driverLocation", (driverLocation) => {
       const pointCoords = [...this.props.pointCoords, driverLocation];
       this.map.fitToCoordinates(pointCoords, {
-        edgePadding: {top: 140, bottom: 20, left: 20, right: 20},
+        edgePadding: { top: 140, bottom: 20, left: 20, right: 20 },
       });
       this.setState({
         lookingForDriver: false,
@@ -236,16 +299,15 @@ export default class PassengerScreen extends Component {
   }
 
   render() {
-    const {navigation} = this.props;
-    const {checked} = this.state;
+    const { navigation } = this.props;
+    const { checked } = this.state;
     let marker = null;
     let getDriver = null;
-    let srchRide = null;
-    let paymentMode = null;
     let cnfBooking = null;
-
     let findingDriverActIndicator = null;
     let driverMarker = null;
+
+    console.log("current ride", this.props.vehicle.current);
 
     if (this.props.latitude === null) return null;
 
@@ -253,8 +315,8 @@ export default class PassengerScreen extends Component {
       driverMarker = (
         <Marker coordinate={this.state.driverLocation}>
           <Image
-            source={require('../assets/ace.png')}
-            style={{width: 40, height: 80}}
+            source={require("../assets/ace.png")}
+            style={{ width: 40, height: 80 }}
           />
         </Marker>
       );
@@ -276,330 +338,71 @@ export default class PassengerScreen extends Component {
         />
       );
 
-      srchRide = (
-        <RBSheet
-          ref={ref => {
-            this[RBSheet + 8] = ref;
-          }}
-          height={300}
-          openDuration={250}
-          customStyles={{
-            container: {
-              justifyContent: 'center',
-              alignItems: 'center',
-              borderTopLeftRadius: 15,
-              borderTopRightRadius: 15,
-            },
-          }}>
-          <View style={{flex: 1}}>
-            {/* Top */}
-            <View style={{marginTop: 10}}>
-              {/* <Text style={{fontWeight:'bold',fontSize:16,color:'#3FC5EE'}}>Delivery Contact</Text> */}
-              <View
-                style={{
-                  height: 5,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
-                <FontAwesome
-                  name="window-minimize"
-                  color="#D7D7D7"
-                  size={25}
-                  style={{paddingLeft: 10, paddingRight: 10}}
-                />
-              </View>
-            </View>
-            {/* Main */}
-            <View style={{marginTop: 30}}>
-              <View
-                style={{
-                  height: 60,
-                  borderColor: 'gray',
-                  width: styles.ex.width - 30,
-                  paddingLeft: 10,
-                  backgroundColor: '#fff',
-                  flexDirection: 'row',
-                }}>
-                <Image
-                  source={require('../assets/tempo/eeco.png')}
-                  style={{width: 60, height: 60}}
-                />
-                <View>
-                  <Text
-                    style={{
-                      fontWeight: 'bold',
-                      fontSize: 16,
-                      marginTop: 5,
-                      marginLeft: 10,
-                    }}>
-                    Ace Helper
-                  </Text>
-                  <Text
-                    style={{
-                      fontWeight: 'normal',
-                      fontSize: 16,
-                      color: 'gray',
-                      marginTop: 5,
-                      marginLeft: 10,
-                    }}>
-                    Searching for driver...
-                  </Text>
-                  <Text
-                    style={{
-                      fontWeight: 'normal',
-                      fontSize: 12,
-                      color: '#FF1D6B',
-                      marginTop: 5,
-                      marginLeft: 10,
-                    }}>
-                    Booking will be cancelled if not allocated in 9:50
-                  </Text>
-                </View>
-              </View>
-              <View
-                style={{
-                  borderBottomColor: '#cecece',
-                  borderBottomWidth: 1,
-                  marginTop: 20,
-                }}
-              />
-              <View
-                style={{
-                  height: 60,
-                  borderColor: 'gray',
-                  width: styles.ex.width - 30,
-                  paddingLeft: 10,
-                  backgroundColor: '#fff',
-                  flexDirection: 'row',
-                }}>
-                <Image
-                  source={require('../assets/cash1.png')}
-                  style={{width: 50, height: 50, marginTop: 10}}
-                />
-                <View style={{marginTop: 20, marginLeft: 10}}>
-                  <Text style={{fontWeight: 'bold', fontSize: 16}}>
-                    ₹ 920 Cash
-                  </Text>
-                </View>
-              </View>
-            </View>
-            <View
-              style={{
-                borderBottomColor: '#cecece',
-                borderBottomWidth: 1,
-                marginTop: 20,
-              }}
-            />
-            {/* Bottom */}
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                marginTop: 50,
-              }}>
-              <TouchableOpacity
-                style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                <FontAwesome
-                  name="window-close"
-                  color="#5BDC4E"
-                  size={18}
-                  style={{paddingLeft: 10, paddingRight: 10}}
-                />
-                <Text>CANCEL TRIP</Text>
-              </TouchableOpacity>
-              <Text
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  fontSize: 25,
-                  color: '#D7D7D7',
-                }}>
-                |
-              </Text>
-              <TouchableOpacity
-                style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                <FontAwesome
-                  name="info-circle"
-                  color="#5BDC4E"
-                  size={18}
-                  style={{paddingRight: 10}}
-                />
-                <Text style={{paddingRight: 20}}>INFO</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </RBSheet>
-      );
       cnfBooking = (
         <RBSheet
-          ref={ref => {
+          ref={(ref) => {
             this[RBSheet + 7] = ref;
           }}
           height={300}
           openDuration={250}
           customStyles={{
             container: {
-              justifyContent: 'center',
-              alignItems: 'center',
+              justifyContent: "center",
+              alignItems: "center",
               borderTopLeftRadius: 15,
               borderTopRightRadius: 15,
             },
-          }}>
-          <View style={{flex: 1}}>
+          }}
+        >
+          <View style={{ flex: 1 }}>
             {/* Top */}
-            <View style={{marginTop: 10}}>
+            <View style={{ marginTop: 10 }}>
               {/* <Text style={{fontWeight:'bold',fontSize:16,color:'#3FC5EE'}}>Delivery Contact</Text> */}
-              <Text style={{fontWeight: 'normal', fontSize: 16}}>
+              <Text style={{ fontWeight: "normal", fontSize: 16 }}>
                 Driver will call this contact while delivery
               </Text>
             </View>
             {/* Main */}
-            <View style={{marginTop: 50}}>
+            <View style={{ marginTop: 50 }}>
               <TextInput
                 style={{
                   height: 45,
-                  borderColor: 'gray',
+                  borderColor: "gray",
                   borderWidth: 1,
                   width: styles.ex.width - 30,
                   borderRadius: 15,
                   paddingLeft: 15,
                 }}
-                onChangeText={RecInfo => this.setState({RecInfo})}
+                onChangeText={(RecInfo) => this.setState({ RecInfo })}
                 value={this.state.RecInfo}
               />
               <TextInput
                 style={{
                   height: 45,
-                  borderColor: 'gray',
+                  borderColor: "gray",
                   borderWidth: 1,
                   width: styles.ex.width - 30,
                   marginTop: 30,
                   borderRadius: 15,
                   paddingLeft: 15,
                 }}
-                onChangeText={RecInfo2 => this.setState({RecInfo2})}
+                onChangeText={(RecInfo2) => this.setState({ RecInfo2 })}
                 value={this.state.RecInfo2}
               />
             </View>
             {/* Bottom */}
-            <View style={{marginTop: 30}}>
+            <View style={{ marginTop: 30 }}>
               <TouchableOpacity
                 style={styles.button}
-                onPress={() => this[RBSheet + 8].open()}>
+                onPress={() => this[RBSheet + 8].open()}
+              >
                 <Text style={styles.buttonText}>CONFIRM BOOKING</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.button}
-                onPress={() => this.requestDriver()}>
+                onPress={() => this.requestDriver()}
+              >
                 <Text style={styles.buttonText}>Delete this button</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </RBSheet>
-      );
-
-      paymentMode = (
-        <RBSheet
-          ref={ref => {
-            this[RBSheet + 2] = ref;
-          }}
-          height={300}
-          openDuration={250}
-          customStyles={{
-            container: {
-              justifyContent: 'center',
-              alignItems: 'center',
-              borderTopLeftRadius: 15,
-              borderTopRightRadius: 15,
-            },
-          }}>
-          <View style={{flex: 1}}>
-            {/* Top */}
-            <View style={{marginTop: 20, marginLeft: 20, flexDirection: 'row'}}>
-              <Text>
-                <Text style={{fontWeight: 'bold', fontSize: 16, color: '#000'}}>
-                  Credits
-                </Text>
-                <Text style={{color: '#fff'}}>---</Text>
-                <Text>₹ 0.00</Text>
-              </Text>
-              <TouchableOpacity style={{marginTop: 20, marginLeft: 3}}>
-                <Text
-                  style={{fontWeight: 'bold', fontSize: 16, color: '#51DF3F'}}>
-                  Add money
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={{marginTop: 20, marginLeft: 3}}
-                onPress={() => this[RBSheet + 7].open()}>
-                <Text
-                  style={{fontWeight: 'bold', fontSize: 16, color: '#51DF3F'}}>
-                  Next
-                </Text>
-              </TouchableOpacity>
-            </View>
-            {/* Main */}
-            <View style={{marginTop: 10}}>
-              <TouchableOpacity
-                style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
-                onPress={() => {
-                  this.setState({checked: 'first'});
-                }}>
-                <Image
-                  source={require('../assets/paytmlogo.jpg')}
-                  style={{width: 100, height: 30}}
-                />
-                <Text style={{fontWeight: 'bold', fontSize: 18}}>
-                  Paytm Wallet
-                </Text>
-                <RadioButton
-                  value="first"
-                  status={checked === 'first' ? 'checked' : 'unchecked'}
-                  onPress={() => {
-                    this.setState({checked: 'first'});
-                  }}
-                />
-              </TouchableOpacity>
-              <View
-                style={{
-                  borderBottomColor: '#cecece',
-                  borderBottomWidth: 1,
-                }}
-              />
-              <TouchableOpacity
-                style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginBottom: 100,
-                }}
-                onPress={() => {
-                  this.setState({checked: 'second'});
-                }}>
-                <Image
-                  source={require('../assets/cash1.png')}
-                  style={{width: 100, height: 55}}
-                />
-                <Text style={{fontWeight: 'bold', fontSize: 18}}>Cash</Text>
-                <RadioButton
-                  value="second"
-                  status={checked === 'second' ? 'checked' : 'unchecked'}
-                  onPress={() => {
-                    this.setState({checked: 'second'});
-                  }}
-                />
-              </TouchableOpacity>
-            </View>
-            {/* Bottom */}
-            <View style={{marginTop: 30}}>
-              <TouchableOpacity style={styles.button}>
-                <Text style={styles.buttonText}>Update</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -612,34 +415,35 @@ export default class PassengerScreen extends Component {
           <View
             style={{
               height: 50,
-              width: '100%',
-              backgroundColor: '#fff',
-              justifyContent: 'space-between',
-              flexDirection: 'row',
+              width: "100%",
+              backgroundColor: "#fff",
+              justifyContent: "space-between",
+              flexDirection: "row",
               paddingTop: 10,
               paddingLeft: 50,
               paddingRight: 30,
-            }}>
+            }}
+          >
             <FontAwesome name="gift" color="#f9a602" size={25} />
             <TouchableOpacity onPress={() => this.ApplyCoupon()}>
               {this.state.CouponInputVisible ? (
                 <TextInput
                   style={{
                     height: 35,
-                    borderColor: 'gray',
+                    borderColor: "gray",
                     borderWidth: 1,
                     width: 150,
                     borderRadius: 15,
                     paddingLeft: 15,
                   }}
-                  onChangeText={coupon => this.setState({coupon})}
+                  onChangeText={(coupon) => this.setState({ coupon })}
                   value={this.state.coupon}
                   placeholder="APPLY COUPON"
                   autoCapitalize="characters"
                   returnKeyType="done"
                 />
               ) : (
-                <Text style={{color: '#222546', fontWeight: 'bold'}}>
+                <Text style={{ color: "#222546", fontWeight: "bold" }}>
                   Apply Coupon
                 </Text>
               )}
@@ -647,13 +451,13 @@ export default class PassengerScreen extends Component {
           </View>
           <View
             style={{
-              borderBottomColor: '#cecece',
+              borderBottomColor: "#cecece",
               borderBottomWidth: 1.5,
             }}
           />
           <View style={styles.InputAreaContact}>
             <View style={styles.InputAreaContactDetailsPickup}>
-              <Text style={{color: '#222546', fontWeight: 'bold'}}>
+              <Text style={{ color: "#222546", fontWeight: "bold" }}>
                 Pickup Contact
               </Text>
             </View>
@@ -661,32 +465,35 @@ export default class PassengerScreen extends Component {
               <View
                 style={{
                   flex: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                {this.state.RecInfo == '8909330839' &&
-                this.state.RecInfo2 == 'Vikas Gupta' ? (
-                  <View style={{flex: 1, flexDirection: 'row'}}>
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                {this.state.RecInfo == "8909330839" &&
+                this.state.RecInfo2 == "Vikas Gupta" ? (
+                  <View style={{ flex: 1, flexDirection: "row" }}>
                     <TouchableOpacity
                       onPress={() => this.RBSheet.open()}
                       style={{
-                        alignItems: 'center',
-                        justifyContent: 'center',
+                        alignItems: "center",
+                        justifyContent: "center",
                         paddingBottom: 20,
-                      }}>
+                      }}
+                    >
                       <Text>
-                        <Text style={{color: '#222546', fontWeight: 'bold'}}>
+                        <Text style={{ color: "#222546", fontWeight: "bold" }}>
                           {this.state.RecInfo}
                         </Text>
                         <Text
                           style={{
-                            color: '#222546',
-                            fontWeight: 'bold',
+                            color: "#222546",
+                            fontWeight: "bold",
                             fontSize: 40,
-                          }}>
+                          }}
+                        >
                           .
                         </Text>
-                        <Text style={{color: '#222546', fontWeight: 'bold'}}>
+                        <Text style={{ color: "#222546", fontWeight: "bold" }}>
                           {this.state.RecInfo2}
                         </Text>
                       </Text>
@@ -707,34 +514,37 @@ export default class PassengerScreen extends Component {
 
           <View
             style={{
-              flexDirection: 'row',
-              alignItems: 'stretch',
-              justifyContent: 'space-between',
+              flexDirection: "row",
+              alignItems: "stretch",
+              justifyContent: "space-between",
               paddingTop: 10,
-            }}>
+            }}
+          >
             {/* Payment Modal */}
             <TouchableOpacity
-              style={{marginLeft: 20, marginBottom: 20}}
-              onPress={() => this[RBSheet + 2].open()}>
+              style={{ marginLeft: 20, marginBottom: 20 }}
+              onPress={() => this[RBSheet + 2].open()}
+            >
               <View
                 style={{
                   flex: 1,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}>
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
                 <FontAwesome
                   name="credit-card"
                   color="#5BDC4E"
                   size={18}
-                  style={{paddingLeft: 10}}
+                  style={{ paddingLeft: 10 }}
                 />
-                <Text style={{paddingLeft: 10}}>Cash</Text>
+                <Text style={{ paddingLeft: 10 }}>Cash</Text>
                 <FontAwesome
                   name="chevron-up"
                   color="#BDBDBD"
                   size={12}
-                  style={{paddingLeft: 10}}
+                  style={{ paddingLeft: 10 }}
                 />
               </View>
             </TouchableOpacity>
@@ -742,7 +552,8 @@ export default class PassengerScreen extends Component {
             <BottomButton
               //onPressFunction={() => this.requestDriver()}
               onPressFunction={() => this[RBSheet + 7].open()}
-              buttonText={'Book' + ' ' + this.state.VehicalSelected.name}>
+              buttonText={"Book" + " " + this.state.VehicalSelected.name}
+            >
               {findingDriverActIndicator}
             </BottomButton>
           </View>
@@ -750,7 +561,7 @@ export default class PassengerScreen extends Component {
       );
     }
 
-    const pickupPredictions = this.state.pickupPredictions.map(prediction => (
+    const pickupPredictions = this.state.pickupPredictions.map((prediction) => (
       <TouchableHighlight
         key={prediction.id}
         onPress={async () => {
@@ -759,20 +570,29 @@ export default class PassengerScreen extends Component {
           this.setState({
             pickupPredictions: [],
             pickupDestination: pickupDestinationName,
+            pickupContact: true,
+            passengerBottom: false,
           });
 
           //TODO
           Geocoder.from(pickupDestinationName)
-            .then(json => {
+            .then((json) => {
               var location = json.results[0].geometry.location;
 
-              console.log('geocode location :: ', location);
+              console.log("geocode location :: ", location);
               let locationPayload = {
                 latitude: location.lat,
                 longitude: location.lng,
               };
               this.props.changeLocationPickUp(locationPayload);
-              this.setState({pickUpLocation: locationPayload});
+              this.props.setRideData({
+                key: "pickUpLocation",
+                value: {
+                  type: "Point",
+                  coordinates: [location.lat, location.lng],
+                },
+              });
+              this.setState({ pickUpLocation: locationPayload });
               var newRegion = {
                 latitude: location.lat,
                 longitude: location.lng,
@@ -781,29 +601,59 @@ export default class PassengerScreen extends Component {
               };
               this.map.animateToRegion(newRegion, 1000);
             })
-            .catch(error => console.warn(error));
-        }}>
+            .catch((error) => console.warn(error));
+        }}
+      >
         <Text style={styles.suggestions}>
           {prediction.structured_formatting.main_text}
         </Text>
       </TouchableHighlight>
     ));
 
-    const predictions = this.state.predictions.map(prediction => (
+    const predictions = this.state.predictions.map((prediction) => (
       <TouchableHighlight
         onPress={async () => {
           const destinationName = await this.props.getRouteDirections(
             prediction.place_id,
-            prediction.structured_formatting.main_text,
+            prediction.structured_formatting.main_text
           );
 
-          this.setState({predictions: [], destination: destinationName});
+          this.setState({
+            predictions: [],
+            destination: destinationName,
+            passengerBottom: false,
+            deliverContact: true,
+          });
+
+          //TODO
+          Geocoder.from(destinationName)
+            .then((json) => {
+              var location = json.results[0].geometry.location;
+
+              console.log("geocode Drop location :: ", location);
+              let droplocationPayload = {
+                latitude: location.lat,
+                longitude: location.lng,
+              };
+
+              this.props.setRideData({
+                key: "dropLocation",
+                value: {
+                  type: "Point",
+                  coordinates: [location.lat, location.lng],
+                },
+              });
+              this.setState({ dropLocation: droplocationPayload });
+            })
+            .catch((error) => console.warn(error));
+
           this.map.fitToCoordinates(this.props.pointCoords, {
-            edgePadding: {top: 20, bottom: 20, left: 20, right: 20},
+            edgePadding: { top: 20, bottom: 20, left: 20, right: 20 },
           });
           this[RBSheet + 4].open();
         }}
-        key={prediction.id}>
+        key={prediction.id}
+      >
         <View>
           <Text style={styles.suggestions}>
             {prediction.structured_formatting.main_text}
@@ -817,14 +667,15 @@ export default class PassengerScreen extends Component {
           <TouchableOpacity
             onPress={() => {
               navigation.toggleDrawer();
-            }}>
+            }}
+          >
             <Image
-              source={require('../assets/drawrIcon.png')}
+              source={require("../assets/drawrIcon.png")}
               style={styles.drawrButton}
             />
           </TouchableOpacity>
         </View>
-        <View style={[styles.actionLocker, {paddingHorizontal: 10}]}>
+        <View style={[styles.actionLocker, { paddingHorizontal: 10 }]}>
           <View style={styles.action_first_search}>
             <Feather
               name="search"
@@ -837,21 +688,33 @@ export default class PassengerScreen extends Component {
               value={this.state.pickupDestination}
               style={styles.textInput}
               clearButtonMode="always"
-              onChangeText={pickupDestination => {
+              onChangeText={(pickupDestination) => {
                 console.log(pickupDestination);
-                this.setState({pickupDestination});
+                this.setState({ pickupDestination });
                 this.onChangePickupDestinationDebounced(pickupDestination);
               }}
             />
-            <TouchableOpacity onPress={() => this[RBSheet + 15].open()}>
+            <TouchableOpacity
+              onPress={() => {
+                this.setState({ passengerBottom: false, pickupContact: true });
+                this.props.setRideData({
+                  key: "pickupContact",
+                  value: true,
+                });
+                this.props.setRideData({
+                  key: "passengerBottom",
+                  value: false,
+                });
+              }}
+            >
               <Image
-                source={require('../assets/phone-book-icon.png')}
+                source={require("../assets/phone-book-icon.png")}
                 style={styles.phone_book}
               />
             </TouchableOpacity>
           </View>
 
-          <View style={[styles.action, {marginLeft: 10}]}>
+          <View style={[styles.action, { marginLeft: 10 }]}>
             <Feather
               name="search"
               color="green"
@@ -863,15 +726,23 @@ export default class PassengerScreen extends Component {
               value={this.state.destination}
               style={styles.textInput}
               clearButtonMode="always"
-              onChangeText={destination => {
+              onChangeText={(destination) => {
                 console.log(destination);
-                this.setState({destination});
+                this.setState({ destination });
                 this.onChangeDestinationDebounced(destination);
               }}
             />
-            <TouchableOpacity onPress={() => this[RBSheet + 3].open()}>
+            <TouchableOpacity
+              onPress={() => {
+                this.setState({ passengerBottom: false, deliverContact: true });
+                this.props.setRideData({
+                  key: "deliverContact",
+                  value: true,
+                });
+              }}
+            >
               <Image
-                source={require('../assets/phone-book-icon.png')}
+                source={require("../assets/phone-book-icon.png")}
                 style={styles.phone_book}
               />
             </TouchableOpacity>
@@ -903,7 +774,7 @@ export default class PassengerScreen extends Component {
          />
          </View>  */}
         <MapView
-          ref={map => {
+          ref={(map) => {
             this.map = map;
           }}
           zoomEnabled={true}
@@ -920,7 +791,8 @@ export default class PassengerScreen extends Component {
           showsCompass={true}
           followUserLocation={true}
           loadingEnabled={true}
-          onRegionChangeComplete={this.handleRegionChange}>
+          onRegionChangeComplete={this.handleRegionChange}
+        >
           <Polyline
             coordinates={this.props.pointCoords}
             strokeWidth={4}
@@ -930,23 +802,22 @@ export default class PassengerScreen extends Component {
           {driverMarker}
 
           <Marker
-            position={'center'}
-            // draggable
-
-            onDragEnd={e => {
+            position={"center"}
+            draggable
+            onDragEnd={(e) => {
               this.props.changeLocationPickUp(e.nativeEvent.coordinate);
               Geocoder.from(
                 e.nativeEvent.coordinate.latitude,
-                e.nativeEvent.coordinate.longitude,
+                e.nativeEvent.coordinate.longitude
               )
-                .then(json => {
+                .then((json) => {
                   var addressComponent = json.results[0].address_components[0];
-                  console.log('addressComponent :: ', addressComponent);
+                  console.log("addressComponent :: ", addressComponent);
                   this.setState({
                     pickupDestination: addressComponent.short_name,
                   });
                 })
-                .catch(error => console.warn(error));
+                .catch((error) => console.warn(error));
             }}
             coordinate={
               this.state && this.state.pickUpLocation != null
@@ -957,9 +828,10 @@ export default class PassengerScreen extends Component {
                   }
             }
             // coordinate = {this.props}
-            image={require('../assets/marker.png')}
+            image={require("../assets/marker.png")}
             title="Location Title"
-            description="this is the discription">
+            description="this is the discription"
+          >
             <Callout tooltip>
               <View>
                 <View style={styles.bubble}>
@@ -967,7 +839,7 @@ export default class PassengerScreen extends Component {
                   {/* <Text>A Short description</Text>   */}
                   <Image
                     style={styles.image}
-                    source={require('../assets/logo-white-back.png')}
+                    source={require("../assets/logo-white-back.png")}
                     resizeMode="stretch"
                   />
                 </View>
@@ -980,35 +852,167 @@ export default class PassengerScreen extends Component {
           {/* <StatusBar barStyle={theme.dark ? "light-content" : "dark-content"} /> */}
         </MapView>
 
-        {!this.state.pickupContact === false ? <PickupContact /> : null}
-        {!this.state.deliverContact === false ? <DeliverContact /> : null}
-        {!this.state.selectCategory === false ? <SelectCategory /> : null}
-        {this.state.passengerBottom ? (
+        {this.props.vehicle.rideData.pickupContact !== false ? (
+          <View style={styles.passengerBottom}>
+            <PickupContact />
+          </View>
+        ) : null}
+        {!this.props.vehicle.rideData.deliverContact === false ? (
+          <View style={styles.passengerBottom}>
+            <DeliverContact />
+          </View>
+        ) : null}
+        {!this.state.selectCategory === false ? (
+          <View style={styles.passengerBottom}>
+            <SelectCategory />
+            <View style={styles.passengerBottomViewAlone}>
+              <TouchableOpacity
+                style={styles.passengerBottomButton}
+                onPress={() => {
+                  this.setState({
+                    selectCategory: false,
+                    passengerBottom: true,
+                  });
+                }}
+              >
+                <Text style={styles.passengerBottomText}>Ok</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : null}
+        {this.props.vehicle.rideData.passengerBottom ? (
           <View style={styles.passengerBottom}>
             <PassengerBottom />
             <View style={styles.passengerBottomView}>
               <TouchableOpacity
                 style={styles.passengerBottomButton}
                 onPress={() => {
-                  this.setState({selectCategory: true, passengerBottom: false});
-                }}>
+                  this.setState({
+                    selectCategory: true,
+                    passengerBottom: false,
+                  });
+                }}
+              >
                 <Text style={styles.passengerBottomText}>Goods Category</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.passengerBottomButton}
+                onPress={() => {
+                  // this.props.bookRide(this.props.vehicle.rideData);
+                  this.props.setRideData({
+                    key: "paymentMethod",
+                    value: true,
+                  });
+                  this.props.setRideData({
+                    key: "passengerBottom",
+                    value: false,
+                  });
+                }}
+              >
+                <Text style={styles.passengerBottomText}>Next</Text>
               </TouchableOpacity>
             </View>
           </View>
         ) : null}
 
+        {this.props.vehicle.rideData.searchRide ? (
+          <View style={styles.passengerBottom}>
+            <SearchRide />
+            <View style={styles.passengerBottomView}>
+              <View style={{ flexDirection: "row" }}>
+                <TouchableOpacity
+                  style={styles.passengerBottomButtonCancel}
+                  onPress={() => {
+                    this.setState({ searchRide: false, cancelTrip: true });
+                  }}
+                >
+                  <FontAwesome
+                    name="window-close"
+                    color="red"
+                    size={25}
+                    borderRadius={15}
+                  />
+                  <Text style={styles.passengerBottomTextCancel}>
+                    Cancel Trip
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <View>
+                <TouchableOpacity
+                  style={styles.passengerBottomButton}
+                  onPress={() => {
+                    this.setState({
+                      searchRide: false,
+                      bookingConfirmMessage: true,
+                      bookingConfirm: true,
+                    });
+                  }}
+                >
+                  <Text style={styles.passengerBottomTextCancel}>
+                    Cnf Booking
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        ) : null}
+
+        {this.props.vehicle.rideData.paymentMethod ? (
+          <View style={styles.passengerBottom}>
+            <PaymentMethod />
+            <View style={styles.passengerBottomViewAlone}>
+              <TouchableOpacity
+                style={styles.passengerBottomButton}
+                onPress={() => {
+                  this.props.setRideData({
+                    key: "paymentMethod",
+                    value: false,
+                  });
+                  this.props.setRideData({
+                    key: "searchRide",
+                    value: true,
+                  });
+                  console.log(this.props.vehicle.rideData, "rideData");
+                  this.props.bookRide(this.props.vehicle.rideData);
+                }}
+              >
+                <Text style={styles.passengerBottomText}>Book Now</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : null}
+
+        {this.state.bookingConfirm ? (
+          <BookingConfirm onChange={(value) => this.setState(value)} />
+        ) : null}
+
+        {this.props.vehicle?.current?.status == "accepted" ? (
+          <BookingConfirmMessage onChange={(value) => this.setState(value)} />
+        ) : null}
+
+        {this.state.cancelTrip ? (
+          <CancelTrip onChange={(value) => this.setState(value)} />
+        ) : null}
+
         {cnfBooking}
-        {srchRide}
-        {paymentMode}
       </View>
     );
   }
 }
-
+const mapStateToProps = (state) => {
+  return {
+    vehicle: state.vehicle,
+    common: state.common,
+  };
+};
+export default connect(mapStateToProps, {
+  setRideData,
+  bookRide,
+  getCurrentRide,
+})(PassengerScreen);
 const styles = StyleSheet.create({
   suggestions: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     padding: 5,
     fontSize: 18,
     borderWidth: 0.5,
@@ -1016,62 +1020,50 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   bottomButton: {
-    backgroundColor: 'black',
-    marginTop: 'auto',
+    backgroundColor: "black",
+    marginTop: "auto",
     margin: 20,
     padding: 15,
     paddingLeft: 30,
     paddingRight: 30,
-    alignSelf: 'center',
-  },
-  bottomButtonText: {
-    color: 'white',
-    fontSize: 20,
-  },
-  destinationInput: {
-    height: 40,
-    borderWidth: 1,
-    marginTop: 50,
-    marginLeft: 5,
-    marginRight: 5,
-    backgroundColor: 'white',
+    alignSelf: "center",
   },
   textInput: {
     flex: 1,
     marginTop: 5,
     paddingLeft: 10,
-    color: 'black',
+    color: "black",
   },
   action: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginTop: 0,
     borderBottomWidth: 1,
-    borderBottomColor: '#f2f2f2',
+    borderBottomColor: "#f2f2f2",
     paddingBottom: 1,
-    width: '48%',
-    backgroundColor: 'white',
+    width: "48%",
+    backgroundColor: "white",
     borderRadius: 10,
     borderLeftWidth: 15,
-    borderLeftColor: 'red',
-    justifyContent: 'center',
-    alignItems: 'center',
+    borderLeftColor: "red",
+    justifyContent: "center",
+    alignItems: "center",
   },
   action_first_search: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginTop: 0,
     borderBottomWidth: 1,
-    borderBottomColor: '#f2f2f2',
+    borderBottomColor: "#f2f2f2",
     paddingBottom: 1,
-    width: '48%',
-    backgroundColor: 'white',
+    width: "48%",
+    backgroundColor: "white",
     borderRadius: 10,
     borderLeftWidth: 15,
-    borderLeftColor: '#47e11d',
-    justifyContent: 'center',
-    alignItems: 'center',
+    borderLeftColor: "#47e11d",
+    justifyContent: "center",
+    alignItems: "center",
   },
   actionLocker: {
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   top: {
     flex: 1,
@@ -1080,38 +1072,38 @@ const styles = StyleSheet.create({
     marginLeft: 2,
   },
   opneLocation: {
-    color: 'blue',
+    color: "blue",
   },
 
   map: {
     ...StyleSheet.absoluteFillObject,
-    height: '100%',
+    height: "100%",
     zIndex: -9999,
   },
   bubble: {
-    flexDirection: 'column',
-    alignSelf: 'flex-start',
-    backgroundColor: '#fff',
+    flexDirection: "column",
+    alignSelf: "flex-start",
+    backgroundColor: "#fff",
     borderRadius: 6,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderWidth: 0.5,
     padding: 15,
     width: 150,
   },
   arrow: {
-    backgroundColor: 'transparent',
-    borderColor: 'transparent',
-    borderTopColor: '#fff',
+    backgroundColor: "transparent",
+    borderColor: "transparent",
+    borderTopColor: "#fff",
     borderWidth: 16,
-    alignSelf: 'center',
+    alignSelf: "center",
     marginTop: -32,
   },
   arrowBorder: {
-    backgroundColor: 'transparent',
-    borderColor: 'transparent',
-    borderTopColor: '#007a87',
+    backgroundColor: "transparent",
+    borderColor: "transparent",
+    borderTopColor: "#007a87",
     borderWidth: 16,
-    alignSelf: 'center',
+    alignSelf: "center",
     marginTop: -0.5,
   },
   name: {
@@ -1125,25 +1117,25 @@ const styles = StyleSheet.create({
   textStyle: {
     marginLeft: 30,
     padding: 5,
-    color: 'black',
-    backgroundColor: 'white',
+    color: "black",
+    backgroundColor: "white",
     fontSize: 14,
     borderWidth: 1,
   },
   InputArea: {
-    flexDirection: 'row',
-    marginTop: 'auto',
-    backgroundColor: '#fff',
+    flexDirection: "row",
+    marginTop: "auto",
+    backgroundColor: "#fff",
   },
   InputField: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 12,
-    marginTop: 'auto',
+    marginTop: "auto",
   },
   TouchableOpacity: {
     padding: 10,
-    width: '25%',
-    alignItems: 'center',
+    width: "25%",
+    alignItems: "center",
   },
   tempoImage: {
     width: 80,
@@ -1151,75 +1143,75 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   toselected: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   tempoImageSelected: {
     width: 80,
     height: 80,
     borderRadius: 0,
-    borderColor: 'black',
+    borderColor: "black",
     borderWidth: 1,
   },
   InputAreaContact: {
-    flexDirection: 'row',
+    flexDirection: "row",
     paddingVertical: 10,
-    borderBottomColor: 'grey',
+    borderBottomColor: "grey",
     borderBottomWidth: 1,
   },
   InputAreaContactDetails: {
-    width: '50%',
-    alignItems: 'center',
-    flexDirection: 'row',
-    color: 'blue',
-    justifyContent: 'center',
+    width: "50%",
+    alignItems: "center",
+    flexDirection: "row",
+    color: "blue",
+    justifyContent: "center",
   },
   InputAreaContactDetailsPickup: {
-    width: '50%',
-    alignItems: 'center',
+    width: "50%",
+    alignItems: "center",
     fontSize: 15,
   },
   InputAreaContactDetailsText: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   category: {
     padding: 20,
-    textAlignVertical: 'center',
-    textAlign: 'center',
+    textAlignVertical: "center",
+    textAlign: "center",
   },
   categoryItem: {
     padding: 5,
-    textAlignVertical: 'center',
+    textAlignVertical: "center",
   },
   ex: {
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
+    width: Dimensions.get("window").width,
+    height: Dimensions.get("window").height,
   },
   view: {
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
     margin: 0,
   },
   button: {
-    backgroundColor: '#FF9633',
-    width: Dimensions.get('window').width - 30,
+    backgroundColor: "#FF9633",
+    width: Dimensions.get("window").width - 30,
     height: 40,
     borderRadius: 25,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   buttonText: {
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#fff',
+    fontWeight: "bold",
+    color: "#fff",
   },
   column: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    width: '100%',
+    flexDirection: "column",
+    alignItems: "flex-start",
+    width: "100%",
   },
   row: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    alignItems: "flex-start",
+    flexWrap: "wrap",
     flex: 1,
   },
   bullet: {
@@ -1229,24 +1221,24 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   boldText: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   normalText: {},
 
   textCenter: {
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 18,
     marginTop: 15,
   },
   selectCategory: {
     borderRadius: 5,
-    borderColor: '#fff',
-    color: '#000',
-    textAlign: 'center',
-    width: '100%',
+    borderColor: "#fff",
+    color: "#000",
+    textAlign: "center",
+    width: "100%",
   },
   shadow: {
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 5,
@@ -1257,38 +1249,6 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
 
-  selectedView: {
-    borderRadius: 10,
-    borderWidth: 3,
-    borderColor: '#f9f9f9',
-    shadowOffset: {width: 50, height: 20},
-    shadowColor: '#fff',
-    shadowOpacity: 10,
-    elevation: 15,
-    zIndex: 9999,
-    marginTop: -30,
-    margin: 10,
-    height: 150,
-    width: 120,
-    padding: 0,
-    alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-  selectedViewText: {
-    flexDirection: 'row',
-  },
-  selectedViewImage: {
-    width: 80,
-    height: 80,
-  },
-
-  selectedViewImageSelected: {
-    width: 80,
-    height: 80,
-    borderRadius: 0,
-    borderColor: 'black',
-    borderWidth: 1,
-  },
   drawrButton: {
     width: 50,
     height: 50,
@@ -1300,27 +1260,67 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   headerNav: {
-    justifyContent: 'flex-start',
+    justifyContent: "flex-start",
     padding: 10,
-    paddingTop: 40,
+    width: 65,
   },
   capacity: {
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   passengerBottom: {
-    marginTop: 'auto',
-    backgroundColor: 'transparent',
+    marginTop: "auto",
+    backgroundColor: "white",
   },
   passengerBottomView: {
-    alignItems: 'flex-end',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginHorizontal: 10,
+  },
+  passengerBottomViewAlone: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    marginVertical: 10,
+    marginHorizontal: 10,
   },
   passengerBottomButton: {
-    backgroundColor: 'yellow',
+    backgroundColor: "yellow",
     padding: 10,
     borderRadius: 15,
+    width: 150,
+    marginHorizontal: 15,
+    textAlign: "center",
+  },
+  passengerBottomButtonCancel: {
+    alignItems: "center",
+    textAlign: "center",
+    width: 100,
+    flexDirection: "row",
+  },
+  passengerBottomTextCancel: {
+    fontSize: 15,
+    fontWeight: "bold",
+    textAlign: "left",
+    color: "black",
+    marginLeft: 10,
+  },
+  passengerBottomButtonInfo: {
+    backgroundColor: "green",
+    padding: 10,
+    borderRadius: 15,
+    width: 150,
+  },
+  passengerBottomTextInfo: {
+    fontSize: 15,
+    fontWeight: "bold",
+    textAlign: "center",
+    color: "white",
   },
   passengerBottomText: {
     fontSize: 15,
-    fontWeight: 'bold',
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  cross: {
+    borderRadius: 25,
   },
 });

@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   StyleSheet,
   View,
@@ -11,35 +11,35 @@ import {
   StatusBar,
   ImageBackground,
   ScrollView,
-} from 'react-native';
+} from "react-native";
 
-import * as Animatable from 'react-native-animatable';
-import LinearGradient from 'react-native-linear-gradient';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import Feather from 'react-native-vector-icons/Feather';
-import {CommonActions, useTheme} from '@react-navigation/native';
-import {fontSizes} from '../../common/fontSizes';
+import * as Animatable from "react-native-animatable";
+import LinearGradient from "react-native-linear-gradient";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import Feather from "react-native-vector-icons/Feather";
+import { CommonActions, useTheme } from "@react-navigation/native";
+import { fontSizes } from "../../common/fontSizes";
 
-const Login = props => {
-  const {colors} = useTheme();
+const Login = (props) => {
+  const { colors } = useTheme();
 
-  const image = require('../../assets/backgroundSmall.png');
+  const image = require("../../assets/backgroundSmall.png");
 
   const [data, setData] = React.useState({
-    mobile: '',
-    username: '',
-    password: '',
+    mobile: "",
+    username: "",
+    password: "",
     check_textInputChange: false,
     secureTextEntry: true,
     isValidUser: true,
     isValidPassword: true,
   });
   const [view, changeView] = React.useState({
-    viewTitle: 'Mobile no.',
-    viewPlaceholder: '+91-00000-00000',
+    viewTitle: "Mobile no.",
+    viewPlaceholder: "+91-00000-00000",
   });
 
-  const changeMobileNumberHandler = value => {
+  const changeMobileNumberHandler = (value) => {
     setData({
       ...data,
       mobile: value,
@@ -47,26 +47,29 @@ const Login = props => {
   };
 
   const validation = () => {
-    if (data.mobile == '' || data.mobile == null) {
-      alert('Please fill mobile number');
+    if (data.mobile == "" || data.mobile == null) {
+      alert("Please fill mobile number");
       return false;
     } else if (data.mobile.length < 10) {
-      alert('Please fill correct mobile number');
+      alert("Please fill correct mobile number");
       return false;
     }
     return true;
   };
 
   const Login = () => {
-    console.log('checking login props :: ', props);
+    console.log("checking login props :: ", props);
     const payload = {
       Mobile: data.mobile,
+      userType: "driver",
     };
     if (validation()) {
-      props.authenticateUser(payload, res => {
-        console.log('res auth :: ', res);
+      props.authenticateUser(payload, (res) => {
+        console.log("res auth :: ", res);
         if (res.responseCode == 200) {
-          props.navigation.navigate('PhoneVerify',{ mobileNumber: data.mobile });
+          props.navigation.navigate("PhoneVerify", {
+            mobileNumber: data.mobile,
+          });
         }
       });
     }
@@ -76,12 +79,13 @@ const Login = props => {
     <View style={styles.container}>
       <StatusBar backgroundColor="#222546" barStyle="light-content" />
       <KeyboardAvoidingView
-        behavior={Platform.OS == 'ios' ? 'padding' : 'padding'}
+        behavior={Platform.OS == "ios" ? "padding" : "padding"}
         enabled
         keyboardVerticalOffset={0}
         style={{
           flexGrow: 1,
-        }}>
+        }}
+      >
         {/* <ScrollView showsVerticalScrollIndicator={false} style={{flex: 1}}> */}
         <ImageBackground source={image} style={styles.image}>
           <View style={styles.header}>
@@ -90,19 +94,20 @@ const Login = props => {
         </ImageBackground>
         <Animatable.View
           animation="fadeInUpBig"
-          style={[styles.footer, {backgroundColor: colors.background}]}>
-          <Text style={[styles.text_footer, {color: colors.text}]}>
-            {' '}
-            {view.viewTitle}{' '}
+          style={[styles.footer, { backgroundColor: colors.background }]}
+        >
+          <Text style={[styles.text_footer, { color: colors.text }]}>
+            {" "}
+            {view.viewTitle}{" "}
           </Text>
           <View style={styles.action}>
             <FontAwesome name="phone" color={colors.text} size={22} />
             <TextInput
-              onChangeText={value => changeMobileNumberHandler(value)}
+              onChangeText={(value) => changeMobileNumberHandler(value)}
               keyboardType="number-pad"
               maxLength={10}
               placeholder={view.viewPlaceholder}
-              style={[styles.textInput, {color: colors.text}]}
+              style={[styles.textInput, { color: colors.text }]}
               autoCapitalize="none"
               // onEndEditing={e => handleValiUser(e.nativeEvent.text)}
             />
@@ -125,11 +130,15 @@ const Login = props => {
               style={styles.signIn}
               onPress={() => {
                 Login();
-              }}>
+              }}
+            >
               <LinearGradient
-                colors={['#222546', '#222546']}
-                style={styles.signIn}>
-                <Text style={[styles.textSign, {color: '#fff'}]}>Sign In</Text>
+                colors={["#222546", "#222546"]}
+                style={styles.signIn}
+              >
+                <Text style={[styles.textSign, { color: "#fff" }]}>
+                  Sign In
+                </Text>
               </LinearGradient>
             </TouchableOpacity>
           </View>
@@ -145,40 +154,40 @@ export default Login;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#222546',
+    backgroundColor: "#222546",
   },
   header: {
     flex: 3,
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
     paddingHorizontal: 20,
     paddingBottom: 50,
   },
   footer: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     paddingHorizontal: 20,
     paddingVertical: 40,
   },
   text_header: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: "#fff",
+    fontWeight: "bold",
     fontSize: 30,
   },
   text_footer: {
-    color: '#05375a',
-    fontWeight: 'bold',
+    color: "#05375a",
+    fontWeight: "bold",
     fontSize: 18,
   },
   action: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginTop: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#f2f2f2',
+    borderBottomColor: "#f2f2f2",
     paddingBottom: 5,
     paddingVertical: 20,
-    justifyContent: 'center',
+    justifyContent: "center",
     paddingBottom: 20,
   },
   textInput: {
@@ -188,26 +197,26 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
   },
   button: {
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 50,
   },
   signIn: {
-    width: '100%',
+    width: "100%",
     height: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     borderRadius: 10,
   },
   textSign: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   errorMsg: {
-    color: '#FF0000',
+    color: "#FF0000",
     fontSize: 14,
   },
   image: {
     flex: 1,
-    resizeMode: 'stretch',
+    resizeMode: "stretch",
   },
 });

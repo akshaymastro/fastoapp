@@ -1,4 +1,4 @@
-import actionTypes from './types';
+import actionTypes from "./types";
 // initial state
 const INIT_STATE = {
   user: null,
@@ -14,7 +14,11 @@ export default function loginUser(state = INIT_STATE, action) {
         user: action.payload,
         isLoggedIn: true,
       };
-
+    case actionTypes.USER_DETAILS:
+      return {
+        ...state,
+        userDetail: action.payload,
+      };
     case actionTypes.CLEAR_USER:
       return INIT_STATE;
 

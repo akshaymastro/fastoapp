@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -6,61 +6,93 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
-} from 'react-native';
+} from "react-native";
+import { setRideData } from "../../redux/vehicle/action";
+import { useDispatch, useSelector } from "react-redux";
 
 const PickupContact = () => {
-  const [state, setState] = useState({
-    Name: '',
-    Mobile: '',
+  const dispatch = useDispatch();
+  const { rideData } = useSelector((state) => state.vehicle);
+  const [state, setstate] = useState({
+    Name: "",
+    Mobile: "",
+    pickupContact: true,
+    passengerBottom: false,
   });
 
   return (
-    <View style={{flex: 1, backgroundColor: '#fff'}}>
+    <View style={styles.top}>
       {/* Top */}
-      <View style={{marginTop: 10}}>
-        <Text style={{fontWeight: 'bold', fontSize: 16, color: '#3FC5EE'}}>
-          Pickup Contact
+      <View style={{ marginTop: 10 }}>
+        <Text
+          style={{
+            fontWeight: "bold",
+            fontSize: 16,
+            color: "#000",
+            textAlign: "center",
+          }}
+        >
+          Pickup User Contact
         </Text>
-        <Text style={{fontWeight: 'normal', fontSize: 16}}>
+        <Text
+          style={{ fontWeight: "normal", fontSize: 16, textAlign: "center" }}
+        >
           Driver will call this contact while pickup
         </Text>
       </View>
       {/* Main */}
-      <View style={{marginTop: 50}}>
+      <View>
         <TextInput
-          style={{
-            height: 45,
-            borderColor: 'gray',
-            borderWidth: 1,
-            width: styles.ex.width - 30,
-            borderRadius: 15,
-            paddingLeft: 15,
-          }}
-          onChangeText={Name => setState({Name})}
-          value={state.Name}
+          placeholder="Name"
+          style={styles.TextInput}
+          onChangeText={(Name) =>
+            setstate({
+              ...state,
+              Name: Name,
+            })
+          }
         />
         <TextInput
-          style={{
-            height: 45,
-            borderColor: 'gray',
-            borderWidth: 1,
-            width: styles.ex.width - 30,
-            marginTop: 30,
-            borderRadius: 15,
-            paddingLeft: 15,
-          }}
-          onChangeText={Mobile => this.setState({Mobile})}
+          placeholder="Mobile"
+          style={styles.TextInput}
+          onChangeText={(Mobile) => setstate({ ...state, Mobile: Mobile })}
           value={state.Mobile}
         />
       </View>
-      {/* Bottom */}
-      <View style={{marginTop: 30}}>
+      <View style={styles.passengerBottomView}>
         <TouchableOpacity
-          style={styles.button}
-          onPress={() => alert('button clicked')}>
-          <Text style={styles.buttonText}>Update</Text>
+          style={styles.passengerBottomButton}
+          onPress={() => {
+            dispatch(
+              setRideData({
+                key: "pickupNumber",
+                value: state.Mobile,
+              })
+            );
+            dispatch(
+              setRideData({
+                key: "pickupName",
+                value: state.Name,
+              })
+            );
+            dispatch(
+              setRideData({
+                key: "pickupContact",
+                value: false,
+              })
+            );
+            dispatch(
+              setRideData({
+                key: "passengerBottom",
+                value: true,
+              })
+            );
+          }}
+        >
+          <Text style={styles.passengerBottomText}>ok</Text>
         </TouchableOpacity>
       </View>
+      {/* Bottom */}
     </View>
   );
 };
@@ -68,21 +100,37 @@ const PickupContact = () => {
 export default PickupContact;
 
 const styles = StyleSheet.create({
-  ex: {
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
+  TextInput: {
+    height: 45,
+    borderWidth: 1,
+    width: 250,
+    marginTop: 10,
+    borderRadius: 5,
+    fontSize: 18,
   },
-  button: {
-    backgroundColor: '#FF9633',
-    width: Dimensions.get('window').width - 30,
-    height: 40,
-    borderRadius: 25,
-    justifyContent: 'center',
+  top: {
+    flexDirection: "column",
+    marginTop: "auto",
+    backgroundColor: "#fff",
+    height: 200,
+    justifyContent: "center",
+    alignItems: "center",
   },
-  buttonText: {
-    textAlign: 'center',
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#fff',
+  passengerBottom: {
+    marginTop: "auto",
+    backgroundColor: "white",
+  },
+  passengerBottomView: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginHorizontal: 10,
+  },
+  passengerBottomButton: {
+    backgroundColor: "yellow",
+    padding: 10,
+    borderRadius: 15,
+    width: 150,
+    marginHorizontal: 15,
+    textAlign: "center",
   },
 });

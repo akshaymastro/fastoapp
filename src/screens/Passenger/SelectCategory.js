@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -7,66 +7,89 @@ import {
   ScrollView,
   StyleSheet,
   TouchableHighlight,
-} from 'react-native';
-import {TextInput} from 'react-native-gesture-handler';
+} from "react-native";
+import { TextInput } from "react-native-gesture-handler";
+import { useDispatch, useSelector } from "react-redux";
+import { getCategoryList, setRideData } from "../../redux/vehicle/action";
 
 const SelectCategory = () => {
+  const dispatch = useDispatch();
+  const { category, rideData } = useSelector((state) => state.vehicle);
+  useEffect(() => {
+    async function getCat() {
+      await dispatch(getCategoryList());
+    }
+    getCat();
+  }, []);
   const [selectedCategory, setselectedCategory] = useState({
-    Name: 'Select Category',
+    Name: "Select Category",
+    url: "",
     urlImage: require(`../../assets/categoryIcon/books.jpg`),
-    select: '',
-    Quantity: '',
+    select: "",
+    Quantity: "",
     ScrollViewStatus: true,
     AddQuantityStatus: false,
     Categories: [
       {
         id: 1,
-        Name: 'Catering/Restaurant/Event Management',
+        Name: "Catering/Restaurant/Event Management",
         urlImage: require(`../../assets/categoryIcon/resturant.jpg`),
         isSlected: false,
       },
       {
         id: 2,
-        Name: 'Machine/Equipments/Spare Parts/Metals',
+        Name: "Machine/Equipments/Spare Parts/Metals",
         urlImage: require(`../../assets/categoryIcon/machine.jpg`),
         isSlected: false,
       },
       {
         id: 3,
-        Name: 'Textile/Garment/Fashion Accessories',
+        Name: "Textile/Garment/Fashion Accessories",
         urlImage: require(`../../assets/categoryIcon/books.jpg`),
         isSlected: false,
       },
       {
         id: 4,
-        Name: 'Furniture/Home Furnishing',
+        Name: "Furniture/Home Furnishing",
         urlImage: require(`../../assets/categoryIcon/furniture.jpg`),
         isSlected: false,
       },
       {
         id: 5,
-        Name: 'Books/Stationary/Toys/Gifts',
+        Name: "Books/Stationary/Toys/Gifts",
         urlImage: require(`../../assets/categoryIcon/books.jpg`),
         isSlected: false,
       },
     ],
   });
 
-  const {Name, urlImage, Categories, select, ScrollViewStatus, Quantity} =
-    selectedCategory;
+  const {
+    Name,
+    urlImage,
+    Categories,
+    select,
+    ScrollViewStatus,
+    Quantity,
+    url,
+  } = selectedCategory;
 
-  console.log('this', select, ScrollViewStatus, Quantity);
+  console.log("this", select);
+  console.log("this", rideData);
 
   return (
     <View style={styles.InputArea}>
       <View style={styles.selectedView}>
         <View style={styles.selectedViewText}>
-          <Text style={styles.wrap} numberOfLines={1} ellipsizeMode={'tail'}>
+          <Text style={styles.wrap} numberOfLines={1} ellipsizeMode={"tail"}>
             {Name}
           </Text>
         </View>
 
-        <Image source={urlImage} width={45} style={styles.selectedViewImage} />
+        <Image
+          source={url !== "" ? { uri: url } : urlImage}
+          width={45}
+          style={styles.selectedViewImage}
+        />
         <Text>Qty : {Quantity}</Text>
       </View>
 
@@ -81,51 +104,62 @@ const SelectCategory = () => {
             <Text style={styles.quantityText}>Quantity</Text>
             <TextInput
               placeholder={Quantity}
+              value={Quantity}
               style={styles.quantityTextInput}
-              onChangeText={val =>
+              onChangeText={(val) => {
+                dispatch(setRideData({ key: "qty", value: val }));
                 setselectedCategory({
                   ...selectedCategory,
                   Quantity: val,
-                })
-              }
+                });
+              }}
             />
           </View>
           <TouchableOpacity
             style={styles.okButton}
-            onPress={() =>
+            onPress={() => {
               setselectedCategory({
                 ...selectedCategory,
                 ScrollViewStatus: true,
                 AddQuantityStatus: false,
-              })
-            }>
+              });
+            }}
+          >
             <Text style={styles.okButtonText}>OK</Text>
           </TouchableOpacity>
         </View>
       )}
       {!selectedCategory.ScrollViewStatus ? null : (
         <ScrollView horizontal={false} invertStickyHeaders={true}>
-          {selectedCategory.Categories.map((Category, id) => {
+          {category?.map((Category, id) => {
             return (
               <View key={id} style={styles.categoryView}>
                 <TouchableOpacity
                   style={styles.ScrollCategoryItem}
-                  onPress={() =>
+                  onPress={() => {
+                    dispatch(
+                      setRideData({
+                        key: "goodType",
+                        value: Category._id,
+                      })
+                    );
                     setselectedCategory({
                       ...selectedCategory,
-                      Name: Category.Name,
-                      select: Category.id,
-                      urlImage: Category.urlImage,
-                    })
-                  }>
+                      Name: Category.category_name,
+                      select: Category._id,
+                      url: Category.category_image,
+                    });
+                  }}
+                >
                   <View>
                     <Text
-                      style={select === Category.id ? styles.toselected : null}>
-                      {Category.Name}
+                      style={select === Category._id ? styles.toselected : null}
+                    >
+                      {Category.category_name}
                     </Text>
                   </View>
                 </TouchableOpacity>
-                {select === Category.id ? (
+                {select == Category._id ? (
                   <TouchableOpacity
                     style={styles.categoryQuantity}
                     onPress={() =>
@@ -134,8 +168,14 @@ const SelectCategory = () => {
                         ScrollViewStatus: false,
                         AddQuantityStatus: true,
                       })
-                    }>
-                    <Text style={styles.categoryQuantityText}>Add Qty.</Text>
+                    }
+                  >
+                    <Text
+                      style={styles.categoryQuantityText}
+                      onChangeText={() => setselectedCategory({})}
+                    >
+                      Add Qty.
+                    </Text>
                   </TouchableOpacity>
                 ) : null}
               </View>
@@ -154,22 +194,22 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   InputArea: {
-    flexDirection: 'row',
-    marginTop: 'auto',
-    backgroundColor: '#fff',
+    flexDirection: "row",
+    marginTop: "auto",
+    backgroundColor: "#fff",
     height: 190,
   },
   wrap: {
     flex: 1,
-    color: 'black',
+    color: "black",
   },
 
   selectedView: {
     borderRadius: 10,
     borderWidth: 3,
-    borderColor: '#f9f9f9',
+    borderColor: "#f9f9f9",
     // shadowOffset: {width: 50, height: 20},
-    shadowColor: '#fff',
+    shadowColor: "#fff",
     shadowOpacity: 10,
     elevation: 15,
     zIndex: 9999,
@@ -178,11 +218,11 @@ const styles = StyleSheet.create({
     height: 120,
     width: 120,
     padding: 0,
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    alignItems: "center",
+    backgroundColor: "#fff",
   },
   selectedViewText: {
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   selectedViewImage: {
     width: 80,
@@ -193,13 +233,13 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 0,
-    borderColor: 'black',
+    borderColor: "black",
     borderWidth: 1,
   },
   ScrollCategoryItem: {
     padding: 5,
-    justifyContent: 'center',
-    width: '70%',
+    justifyContent: "center",
+    width: "70%",
   },
   tempoImage: {
     width: 80,
@@ -207,82 +247,82 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   toselected: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   tempoImageSelected: {
     width: 80,
     height: 80,
     borderRadius: 0,
-    borderColor: 'black',
+    borderColor: "black",
     borderWidth: 1,
   },
   categoryView: {
-    flexDirection: 'row',
-    backgroundColor: '#f1f1f1',
+    flexDirection: "row",
+    backgroundColor: "#f1f1f1",
     marginBottom: 5,
   },
   categoryQuantity: {
-    justifyContent: 'center',
-    backgroundColor: 'blue',
-    width: '30%',
+    justifyContent: "center",
+    backgroundColor: "blue",
+    width: "30%",
     margin: 5,
   },
   categoryQuantityText: {
-    textAlign: 'center',
-    color: 'white',
+    textAlign: "center",
+    color: "white",
   },
   goodsInfo: {
-    backgroundColor: '#f2b92e',
-    textAlign: 'center',
+    backgroundColor: "#f2b92e",
+    textAlign: "center",
     padding: 5,
   },
   goodsType: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginTop: 10,
   },
   goodsTypeText: {
-    fontWeight: 'bold',
-    color: 'black',
+    fontWeight: "bold",
+    color: "black",
     fontSize: 16,
     borderLeftWidth: 5,
-    borderLeftColor: 'green',
+    borderLeftColor: "green",
     paddingLeft: 8,
-    textAlignVertical: 'center',
-    width: '32%',
+    textAlignVertical: "center",
+    width: "32%",
   },
   goodsTypeName: {
-    width: '45%',
+    width: "45%",
     fontSize: 15,
     marginLeft: 5,
   },
   quantity: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginTop: 10,
   },
   quantityText: {
-    fontWeight: 'bold',
-    color: 'black',
+    fontWeight: "bold",
+    color: "black",
     fontSize: 16,
     borderLeftWidth: 5,
-    borderLeftColor: 'red',
+    borderLeftColor: "red",
     paddingLeft: 8,
-    textAlignVertical: 'center',
-    width: '32%',
+    textAlignVertical: "center",
+    width: "32%",
   },
   quantityTextInput: {
-    backgroundColor: '#f9f9f9',
-    width: '45%',
+    backgroundColor: "#f9f9f9",
+    width: "45%",
     elevation: 5,
   },
   okButton: {
-    justifyContent: 'center',
-    backgroundColor: 'blue',
-    width: '30%',
+    justifyContent: "center",
+    backgroundColor: "blue",
+    width: "30%",
     padding: 5,
-    color: 'white',
-    alignItems: 'center',
+    color: "white",
+    alignItems: "center",
   },
   okButtonText: {
-    color: 'white',
+    color: "white",
   },
 });

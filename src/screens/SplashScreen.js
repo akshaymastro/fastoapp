@@ -14,7 +14,7 @@ import {
 import * as Animatable from 'react-native-animatable';
 import LinearGradient from 'react-native-linear-gradient';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {useTheme} from '@react-navigation/native';
+import {useTheme,CommonActions} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
@@ -26,8 +26,20 @@ const SplashScreen = ({navigation, common}) => {
   useEffect(() => {
     console.log('common props :: ', common);
     if (common.showHome) {
-      navigation.navigate('HomeDrawer');
-    } else {
+     // navigation.navigate('HomeDrawer');
+     navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [
+          {
+            name: "HomeDrawer",
+            params: null,
+          },
+        ],
+      })
+    )
+    }
+    else {
     }
   }, []);
 

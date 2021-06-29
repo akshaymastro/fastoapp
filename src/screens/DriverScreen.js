@@ -1,31 +1,48 @@
-import React, {Component} from 'react';
+import React, { Component } from "react";
 import {
   StyleSheet,
   View,
+  Text,
   Image,
   ActivityIndicator,
   Linking,
   Platform,
   Alert,
-} from 'react-native';
-import MapView, {Polyline, Marker} from 'react-native-maps';
-import BottomButton from '../component/BottomButton';
-import socketIO from 'socket.io-client';
-import BackgroundGeolocation from '@mauron85/react-native-background-geolocation';
-import Geolocation from '@react-native-community/geolocation';
-
-export default class Driver extends Component {
+  TouchableOpacity,
+} from "react-native";
+import MapView, { Polyline, Marker } from "react-native-maps";
+import BottomButton from "../component/BottomButton";
+import io from "socket.io-client";
+import BackgroundGeolocation from "@mauron85/react-native-background-geolocation";
+import Geolocation from "@react-native-community/geolocation";
+import SearchRides from "./driver/SearchRides";
+import RideInfo from "./driver/RideInfo";
+import OtpSubmit from "./driver/OtpSubmit";
+import DropLocation from "./driver/DropLocation";
+import UnloadingTimer from "./driver/UnloadingTimer";
+import TripInvoice from "./invoice/TripInvoice";
+import { connect } from "react-redux";
+import AsyncStorage from "@react-native-community/async-storage";
+import jwtDecode from "jwt-decode";
+const socket = io("https://fasto-backend.herokuapp.com/");
+class Driver extends Component {
   constructor(props) {
     super(props);
     this.state = {
       lookingForPassengers: false,
+      onlineStatus: false,
+      rideAccept: false,
+      startTrip: false,
+      otpSubmit: false,
+      dropLocation: false,
+      unloadingTimer: false,
+      tripInvoice: false,
     };
     this.acceptPassengerRequest = this.acceptPassengerRequest.bind(this);
     this.findPassengers = this.findPassengers.bind(this);
-    this.socket = null;
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     BackgroundGeolocation.configure({
       desiredAccuracy: BackgroundGeolocation.HIGH_ACCURACY,
       stationaryRadius: 50,
@@ -39,51 +56,61 @@ export default class Driver extends Component {
       activitiesInterval: 10000,
       stopOnStillActivity: false,
     });
-
-    BackgroundGeolocation.on('authorization', status => {
+    const lat = await AsyncStorage.getItem("lat");
+    const long = await AsyncStorage.getItem("long");
+    console.log(lat, "latitude");
+    console.log(long, "long");
+    console.log(this.props.common.apiToken, "long");
+    const decoded = jwtDecode(this.props.common.apiToken);
+    console.log(decoded.user._id, "decodedd");
+    socket.emit("updateRiderLocation", {
+      id: decoded.user._id,
+      type: "Point",
+      coordinates: { lat: JSON.parse(long), long: JSON.parse(lat) },
+    });
+    BackgroundGeolocation.on("authorization", (status) => {
       console.log(
-        '[INFO] BackgroundGeolocation authorization status: ' + status,
+        "[INFO] BackgroundGeolocation authorization status: " + status
       );
       if (status !== BackgroundGeolocation.AUTHORIZED) {
         // we need to set delay or otherwise alert may not be shown
         setTimeout(
           () =>
             Alert.alert(
-              'App requires location tracking permission',
-              'Would you like to open app settings?',
+              "App requires location tracking permission",
+              "Would you like to open app settings?",
               [
                 {
-                  text: 'Yes',
+                  text: "Yes",
                   onPress: () => BackgroundGeolocation.showAppSettings(),
                 },
                 {
-                  text: 'No',
-                  onPress: () => console.log('No Pressed'),
-                  style: 'cancel',
+                  text: "No",
+                  onPress: () => console.log("No Pressed"),
+                  style: "cancel",
                 },
-              ],
+              ]
             ),
-          1000,
+          1000
         );
       }
     });
+    console.log(this.props.pointCoords, "pointcoords");
   }
 
   findPassengers() {
     if (!this.state.lookingForPassengers) {
-      this.setState({lookingForPassengers: true});
+      this.setState({ lookingForPassengers: true });
 
       console.log(this.state.lookingForPassengers);
 
-      this.socket = socketIO.connect(
-        'https://CanineHopefulFonts--thevisionclicks.repl.co',
-      );
+      this.socket = socketIO.connect("https://fasto-backend.herokuapp.com");
 
-      this.socket.on('connect', () => {
-        this.socket.emit('passengerRequest');
+      this.socket.on("connect", () => {
+        this.socket.emit("passengerRequest");
       });
 
-      this.socket.on('taxiRequest', async routeResponse => {
+      this.socket.on("taxiRequest", async (routeResponse) => {
         console.log(routeResponse);
         this.setState({
           lookingForPassengers: false,
@@ -91,17 +118,18 @@ export default class Driver extends Component {
           routeResponse,
         });
         await this.props.getRouteDirections(
-          routeResponse.geocoded_waypoints[0].place_id,
+          routeResponse.geocoded_waypoints[0].place_id
         );
         this.map.fitToCoordinates(this.props.pointCoords, {
-          edgePadding: {top: 20, bottom: 20, left: 20, right: 20},
+          edgePadding: { top: 20, bottom: 20, left: 20, right: 20 },
         });
       });
     }
   }
 
   acceptPassengerRequest() {
-    this.socket.emit('driverLocation', {
+    console.log(this.props.latitude, "latititue");
+    this.socket.emit("driverLocation", {
       latitude: this.props.latitude,
       longitude: this.props.longitude,
     });
@@ -109,43 +137,44 @@ export default class Driver extends Component {
     const passengerLocation =
       this.props.pointCoords[this.props.pointCoords.length - 1];
 
-    BackgroundGeolocation.on('location', location => {
+    BackgroundGeolocation.on("location", (location) => {
       //Send driver location to passenger
-      this.socket.emit('driverLocation', {
+      this.socket.emit("driverLocation", {
         latitude: location.latitude,
         longitude: location.longitude,
       });
     });
 
-    BackgroundGeolocation.checkStatus(status => {
+    BackgroundGeolocation.checkStatus((status) => {
       // you don't need to check status before start (this is just the example)
       if (!status.isRunning) {
         BackgroundGeolocation.start(); //triggers start on start event
       }
     });
 
-    if (Platform.OS === 'ios') {
+    if (Platform.OS === "ios") {
       Linking.openURL(
-        `http://maps.apple.com/?daddr=${passengerLocation.latitude},${passengerLocation.longitude}`,
+        `http://maps.apple.com/?daddr=${passengerLocation.latitude},${passengerLocation.longitude}`
       );
     } else {
       Linking.openURL(
-        `geo:0,0?q=${passengerLocation.latitude},${passengerLocation.longitude}(Passenger)`,
+        `geo:0,0?q=${passengerLocation.latitude},${passengerLocation.longitude}(Passenger)`
       );
     }
   }
-
   render() {
+    console.log(this.props?.common?.location, "current location");
     let endMarker = null;
     let startMarker = null;
     let findingPassengerActIndicator = null;
-    let passengerSearchText = 'FIND PASSENGERS 👥';
+    let passengerSearchText = "FIND PASSENGERS 👥";
     let bottomButtonFunction = this.findPassengers;
+    const { navigation } = this.props;
 
     if (this.props.latitude === null) return null;
 
     if (this.state.lookingForPassengers) {
-      passengerSearchText = 'FINDING PASSENGERS...';
+      passengerSearchText = "FINDING PASSENGERS...";
       findingPassengerActIndicator = (
         <ActivityIndicator
           size="large"
@@ -155,28 +184,77 @@ export default class Driver extends Component {
     }
 
     if (this.state.passengerFound) {
-      passengerSearchText = 'FOUND PASSENGER! ACCEPT RIDE?';
+      passengerSearchText = "FOUND PASSENGER! ACCEPT RIDE?";
       bottomButtonFunction = this.acceptPassengerRequest;
     }
 
     if (this.props.pointCoords.length > 1) {
       endMarker = (
         <Marker
-          coordinate={
-            this.props.pointCoords[this.props.pointCoords.length - 1]
-          }>
+          coordinate={this.props.pointCoords[this.props.pointCoords.length - 1]}
+        >
           <Image
-            style={{width: 40, height: 40}}
-            source={require('../assets/map_marker.png')}
+            style={{ width: 40, height: 40 }}
+            source={require("../assets/map_marker.png")}
           />
         </Marker>
       );
     }
+    console.log(
+      this.props.vehicle?.selectedRide?.dropLocation?.coordinates,
+      "vehicle"
+    );
+    console.log(
+      this.props.vehicle?.selectedRide?.pickUpLocation?.coordinates[0],
+      "vehicle"
+    );
 
+    const Pickuplatititue =
+      this.props.vehicle.selectedRide &&
+      this.props.vehicle.selectedRide.pickUpLocation.coordinates;
+    const Pickuplongitue =
+      this.props.vehicle.selectedRide &&
+      this.props.vehicle.selectedRide.pickUpLocation.coordinates;
     return (
       <View style={styles.container}>
+        <View style={styles.headerNav}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.toggleDrawer();
+            }}
+          >
+            <Image
+              source={require("../assets/drawrIcon.png")}
+              style={styles.drawrButton}
+            />
+          </TouchableOpacity>
+          {!this.state.rideAccept ? (
+            <View style={styles.bottomButton}>
+              <TouchableOpacity
+                style={styles.online}
+                onPress={() => {
+                  this.setState({
+                    onlineStatus: false,
+                  });
+                }}
+              >
+                <Text style={styles.onlineText}>offline</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.offline}
+                onPress={() => {
+                  this.setState({
+                    onlineStatus: true,
+                  });
+                }}
+              >
+                <Text style={styles.offlineText}>online</Text>
+              </TouchableOpacity>
+            </View>
+          ) : null}
+        </View>
         <MapView
-          ref={map => {
+          ref={(map) => {
             this.map = map;
           }}
           style={styles.map}
@@ -186,7 +264,8 @@ export default class Driver extends Component {
             latitudeDelta: 0.015,
             longitudeDelta: 0.0121,
           }}
-          showsUserLocation={true}>
+          showsUserLocation={true}
+        >
           <Polyline
             coordinates={this.props.pointCoords}
             strokeWidth={4}
@@ -195,33 +274,65 @@ export default class Driver extends Component {
           {endMarker}
           {startMarker}
         </MapView>
-        <BottomButton
+        {/* <BottomButton
           onPressFunction={bottomButtonFunction}
           buttonText={passengerSearchText}>
           {findingPassengerActIndicator}
-        </BottomButton>
+        </BottomButton> */}
+
+        {!this.state.onlineStatus ? <View style={styles.back}></View> : null}
+        {this.state.onlineStatus ? (
+          <View style={{ flex: 1 }}>
+            {!this.state.rideAccept ? (
+              <SearchRides onChange={(value) => this.setState(value)} />
+            ) : null}
+          </View>
+        ) : null}
+
+        {this.state.startTrip ? (
+          <RideInfo onChange={(value) => this.setState(value)} />
+        ) : null}
+        {this.state.otpSubmit ? (
+          <OtpSubmit onChange={(value) => this.setState(value)} />
+        ) : null}
+        {this.state.dropLocation ? (
+          <DropLocation onChange={(value) => this.setState(value)} />
+        ) : null}
+        {this.state.unloadingTimer ? (
+          <UnloadingTimer onChange={(value) => this.setState(value)} />
+        ) : null}
+        {this.state.tripInvoice ? (
+          <TripInvoice onChange={(value) => this.setState(value)} />
+        ) : null}
       </View>
     );
   }
 }
 
+const mapStateToProps = (state) => {
+  return {
+    common: state.common,
+    vehicle: state.vehicle,
+  };
+};
+export default connect(mapStateToProps)(Driver);
 const styles = StyleSheet.create({
   findDriver: {
-    backgroundColor: 'black',
-    marginTop: 'auto',
+    backgroundColor: "black",
+    marginTop: "auto",
     margin: 20,
     padding: 15,
     paddingLeft: 30,
     paddingRight: 30,
-    alignSelf: 'center',
+    alignSelf: "center",
   },
   findDriverText: {
     fontSize: 20,
-    color: 'white',
-    fontWeight: '600',
+    color: "white",
+    fontWeight: "600",
   },
   suggestions: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     padding: 5,
     fontSize: 18,
     borderWidth: 0.5,
@@ -235,12 +346,59 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     marginRight: 5,
     padding: 5,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   container: {
     ...StyleSheet.absoluteFillObject,
   },
   map: {
     ...StyleSheet.absoluteFillObject,
+  },
+  headerNav: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    padding: 10,
+    zIndex: 9999,
+  },
+  drawrButton: {
+    width: 50,
+    height: 50,
+    margin: 0,
+  },
+  bottomButton: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    zIndex: 9999,
+    width: "100%",
+  },
+  online: {
+    backgroundColor: "red",
+    paddingHorizontal: 20,
+    paddingVertical: 5,
+    borderRadius: 10,
+    marginVertical: 5,
+    marginLeft: 20,
+  },
+  onlineText: {
+    fontSize: 18,
+    color: "white",
+  },
+  offline: {
+    backgroundColor: "green",
+    paddingHorizontal: 20,
+    paddingVertical: 5,
+    borderRadius: 10,
+    marginVertical: 5,
+    marginLeft: 20,
+  },
+  offlineText: {
+    fontSize: 18,
+    color: "white",
+  },
+  back: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 99,
+    backgroundColor: "rgba(52, 52, 52, 0.8)",
+    height: "100%",
   },
 });

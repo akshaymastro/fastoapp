@@ -1,8 +1,9 @@
-import React, {Component} from 'react';
-import Geolocation from '@react-native-community/geolocation';
-import {Keyboard, PermissionsAndroid, Platform} from 'react-native';
-import PolyLine from '@mapbox/polyline';
-import apiKey from '../screens/google_api_key';
+import React, { Component } from "react";
+import Geolocation from "@react-native-community/geolocation";
+import { Keyboard, PermissionsAndroid, Platform } from "react-native";
+import PolyLine from "@mapbox/polyline";
+import apiKey from "../screens/google_api_key";
+import AsyncStorage from "@react-native-community/async-storage";
 
 function genericContainer(WrappedComponent) {
   return class extends Component {
@@ -12,7 +13,7 @@ function genericContainer(WrappedComponent) {
         latitude: null,
         longitude: null,
         pointCoords: [],
-        destination: '',
+        destination: "",
         routeResponse: {},
       };
       this.getRouteDirections = this.getRouteDirections.bind(this);
@@ -23,10 +24,10 @@ function genericContainer(WrappedComponent) {
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
           {
-            title: 'Fasto',
+            title: "Fasto",
             message:
-              'Fasto App needs to use your location to shows routs and get rides for you',
-          },
+              "Fasto App needs to use your location to shows routs and get rides for you",
+          }
         );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
           return true;
@@ -41,21 +42,29 @@ function genericContainer(WrappedComponent) {
     async componentDidMount() {
       //Get current location and set initial region to this
       let granted = false;
-      if (Platform.OS === 'ios') {
+      if (Platform.OS === "ios") {
         granted = true;
       } else {
         granted = await this.checkAndroidPermissions();
       }
       if (granted)
         this.watchId = Geolocation.watchPosition(
-          position => {
+          async (position) => {
+            await AsyncStorage.setItem(
+              "lat",
+              JSON.stringify(position.coords.latitude)
+            );
+            await AsyncStorage.setItem(
+              "long",
+              JSON.stringify(position.coords.longitude)
+            );
             this.setState({
               latitude: position.coords.latitude,
               longitude: position.coords.longitude,
             });
           },
-          error => console.log(error),
-          {enableHighAccuracy: true, maximumAge: 2000, timeout: 20000},
+          (error) => console.log(error),
+          { enableHighAccuracy: true, maximumAge: 2000, timeout: 20000 }
         );
     }
 
@@ -66,13 +75,13 @@ function genericContainer(WrappedComponent) {
     async getRouteDirections(destinationPlaceId, destinationName) {
       try {
         const response = await fetch(
-          `https://maps.googleapis.com/maps/api/directions/json?origin=${this.state.latitude},${this.state.longitude}&destination=place_id:${destinationPlaceId}&key=${apiKey}`,
+          `https://maps.googleapis.com/maps/api/directions/json?origin=${this.state.latitude},${this.state.longitude}&destination=place_id:${destinationPlaceId}&key=${apiKey}`
         );
         const json = await response.json();
         console.log(json);
         const points = PolyLine.decode(json.routes[0].overview_polyline.points);
-        const pointCoords = points.map(point => {
-          return {latitude: point[0], longitude: point[1]};
+        const pointCoords = points.map((point) => {
+          return { latitude: point[0], longitude: point[1] };
         });
         this.setState({
           pointCoords,
@@ -85,8 +94,8 @@ function genericContainer(WrappedComponent) {
       }
     }
 
-    updatePickupPoint = coord => {
-      this.setState({latitude: coord.latitude, longitude: coord.longitude});
+    updatePickupPoint = (coord) => {
+      this.setState({ latitude: coord.latitude, longitude: coord.longitude });
       this.getRouteDirections();
     };
 
@@ -100,7 +109,7 @@ function genericContainer(WrappedComponent) {
           pointCoords={this.state.pointCoords}
           destination={this.state.destination}
           routeResponse={this.state.routeResponse}
-          changeLocationPickUp={coord => this.updatePickupPoint(coord)}
+          changeLocationPickUp={(coord) => this.updatePickupPoint(coord)}
         />
       );
     }

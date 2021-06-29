@@ -51,7 +51,7 @@ const MainTabScreen = () => (
       name="Home"
       component={DetailsScreen}
       options={{
-        tabBarLabel: 'Book Now ',
+        tabBarLabel: 'Notification',
         tabBarColor: '#fff',
         tabBarIcon: ({color}) => (
           <Icon name="ios-home" color={color} size={26} />
@@ -62,10 +62,10 @@ const MainTabScreen = () => (
       name="Details"
       component={DetailsScreen}
       options={{
-        tabBarLabel: 'Orders',
+        tabBarLabel: 'Rides',
         tabBarColor: '#fff',
         tabBarIcon: ({color}) => (
-          <Icon name="md-clock" color={color} size={26} />
+          <Icon name="md-stopwatch" color={color} size={26} />
         ),
       }}
     />
@@ -94,7 +94,7 @@ const MainTabScreen = () => (
       name="Profile"
       component={ProfileScreen}
       options={{
-        tabBarLabel: 'Profile',
+        tabBarLabel: 'Rewards',
         tabBarColor: '#fff',
         tabBarIcon: ({color}) => (
           <Icon name="ios-person" color={color} size={26} />
@@ -105,7 +105,7 @@ const MainTabScreen = () => (
       name="Explore"
       component={ExploreScreen}
       options={{
-        tabBarLabel: 'Payment',
+        tabBarLabel: 'Accounts',
         tabBarColor: '#fff',
         tabBarIcon: ({color}) => (
           <Icon name="ios-wallet" color={color} size={26} />
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
     shadowColor: '#fff',
     shadowOpacity: 1,
     elevation: 20,
-    zIndex: 999,
+    zIndex: 999999,
     marginBottom: 15,
   },
   buttonOutlineImage: {
@@ -166,6 +166,8 @@ const styles = StyleSheet.create({
     marginLeft: 0,
     marginRight: 0,
     width: 60,
-    height: 60,
+    height: 60,    
+    zIndex: 999999,
+
   },
 });

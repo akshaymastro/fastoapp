@@ -5,19 +5,21 @@
  * @author: Ravi
  */
 
-import {combineReducers} from 'redux';
-import commonReducer from './common';
+import { combineReducers } from "redux";
+import commonReducer from "./common";
 
 // import splashReducer from './splash';
-// import authReducer from './auth';
-import toastReducer from './Toast';
-import networkReducer from './network';
+import authReducer from "./auth";
+import toastReducer from "./Toast";
+import networkReducer from "./network";
+import vehicleReducer from "./vehicle";
 
 const rootReducer = combineReducers({
   toastReducer: toastReducer,
   network: networkReducer,
   common: commonReducer,
-  // auth: authReducer,
+  vehicle: vehicleReducer,
+  auth: authReducer,
   // splash: splashReducer,
 });
 

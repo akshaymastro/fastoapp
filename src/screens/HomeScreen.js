@@ -45,10 +45,6 @@ class HomeScreen extends Component {
     };
   }
 
-  // const { colors } = useTheme();
-
-  // const theme = useTheme();
-
   render() {
     if (this.state.isDriver) {
       return <DriverWithGenericContainer />;
@@ -59,7 +55,18 @@ class HomeScreen extends Component {
 
     const {navigation} = this.props;
 
-    return <PassengerWithGenericContainer {...this.props} />;
+   // return <DriverWithGenericContainer {...this.props} />;
+
+   return (<View> 
+            <Button 
+        title="Passenger"
+        onPress={() => this.setState({ isPassenger: true })}
+         />
+        <Button
+         title="Driver"
+         onPress={() => this.setState({ isDriver: true })}
+          />
+          </View>)
   }
 }
 

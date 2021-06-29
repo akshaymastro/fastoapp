@@ -1,0 +1,14 @@
+com/fastodriver/MainApplication.java
+ com.fastodriver.MainApplication
+ com.fastodriver.MainApplication$1
+com/fastodriver/MainActivity.java
+ com.fastodriver.MainActivity
+com/fastodriver/ReactNativeFlipper.java
+ com.fastodriver.ReactNativeFlipper
+ com.fastodriver.ReactNativeFlipper$1
+ com.fastodriver.ReactNativeFlipper$2
+ com.fastodriver.ReactNativeFlipper$2$1
+com/facebook/react/PackageList.java
+ com.facebook.react.PackageList
+com/fastodriver/BuildConfig.java
+ com.fastodriver.BuildConfig

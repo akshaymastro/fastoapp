@@ -32,6 +32,7 @@ import DriverScreen from './screens/DriverScreen';
 import {AuthContext} from './component/context';
 import RootStackScreen from './screens/RootStackScreen';
 import ProfileUpdate from './screens/ProfileUpdate';
+import Wallet from './screens/Wallet/Wallet'
 
 import {createStackNavigator} from '@react-navigation/stack';
 
@@ -206,6 +207,7 @@ export default Navigation = props => {
           <Stack.Screen name="ProfileUpdate" component={ProfileUpdate} />
           <Drawer.Screen name="SupportScreen" component={SupportScreen} />
           <Drawer.Screen name="SettingsScreen" component={SettingsScreen} />
+          <Drawer.Screen name="WalletScreen" component={Wallet} />
           <Drawer.Screen name="InviteEarn" component={InviteEarn} />
           <Drawer.Screen name="AboutScreen" component={AboutScreen} />
           <Drawer.Screen name="BookmarkScreen" component={BookmarkScreen} />

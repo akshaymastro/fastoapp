@@ -24,6 +24,8 @@ import TripInvoice from "./invoice/TripInvoice";
 import { connect } from "react-redux";
 import AsyncStorage from "@react-native-community/async-storage";
 import jwtDecode from "jwt-decode";
+import LoadingTimer from "./driver/loadingTimer";
+
 const socket = io("https://fasto-backend.herokuapp.com/");
 class Driver extends Component {
   constructor(props) {
@@ -163,7 +165,7 @@ class Driver extends Component {
     }
   }
   render() {
-    console.log(this.props?.common?.location, "current location");
+    console.log(this.props?.vehicle?.current, "current location");
     let endMarker = null;
     let startMarker = null;
     let findingPassengerActIndicator = null;
@@ -281,8 +283,13 @@ class Driver extends Component {
         {this.state.otpSubmit ? (
           <OtpSubmit onChange={(value) => this.setState(value)} />
         ) : null}
-        {this.state.dropLocation ? (
+        {!this.props?.vehicle?.current?.loadingTimer &&
+        this.state.dropLocation ? (
           <DropLocation onChange={(value) => this.setState(value)} />
+        ) : null}
+        {this.props?.vehicle?.current?.loadingTimer &&
+        !this.state.dropLocation ? (
+          <LoadingTimer onChange={(value) => this.setState(value)} />
         ) : null}
         {this.state.unloadingTimer ? (
           <UnloadingTimer onChange={(value) => this.setState(value)} />
@@ -298,6 +305,7 @@ class Driver extends Component {
 const mapStateToProps = (state) => {
   return {
     common: state.common,
+    vehicle: state.vehicle,
   };
 };
 export default connect(mapStateToProps)(Driver);

@@ -5,40 +5,43 @@ import LinearGradient from "react-native-linear-gradient";
 import { useDispatch, useSelector } from "react-redux";
 import io from "socket.io-client";
 import AsyncStorage from "@react-native-community/async-storage";
-import { fetchUserDetails } from "../../redux/auth/actions";
 import Geocoder from "react-native-geocoder";
 import { getIpAddress } from "react-native-device-info";
-import { getAvailableTrips } from "../../redux/vehicle/action";
+import { fetchUserDetails } from "../../redux/auth/actions";
+import { selectRide } from "../../redux/vehicle/action";
 
 const socket = io("https://fasto-backend.herokuapp.com/");
 
 const SearchRides = (props) => {
   const dispatch = useDispatch();
   const [driver, setDriver] = useState({});
+  const [rides, setRides] = useState([]);
   const { apiToken } = useSelector((state) => state.common);
   const auth = useSelector((state) => state.auth);
+  const vehicle = useSelector((state) => state.vehicle);
   useEffect(() => {
     async function getRides() {
       const lat = await AsyncStorage.getItem("lat");
       const long = await AsyncStorage.getItem("long");
-      console.log([lat, long], "rahulabc");
       if (lat !== null && long !== null) {
         let decoded;
 
         await dispatch(fetchUserDetails((res) => setDriver(res.data)));
         socket.emit("getRidesForDriver", {
-          coordinates: auth?.userDetail?.currentLocation?.coordinates,
+          coordinates: [-122.084, 37.42199833333333],
         });
-        socket.on("NearByRideList", (res) => console.log(res, "ressssss"));
+        socket.on("NearByRideList", (res) => setRides(res));
       }
     }
-    const xyz = getRides();
-    // async function getAvailableTrips() {
-    dispatch(getAvailableTrips());
-    // }
-    // getAvailableTrips();
+    getRides();
   }, []);
-
+  const acceptRide = () => {
+    socket.emit("acceptride", {
+      id: vehicle.selectedRide._id,
+      status: "accepted",
+      driveId: auth?.userDetail?._id,
+    });
+  };
   const [state, setState] = useState({
     selectedRide: {
       isAlert: false,
@@ -85,9 +88,7 @@ const SearchRides = (props) => {
   });
 
   const { selectedRide } = state;
-  const availableTrips = useSelector(
-    (state) => state.vehicle.availableTrips[0]
-  );
+  const { availableTrips } = useSelector((state) => state?.vehicle);
   console.log("\n\r__TEST11__ ", availableTrips);
 
   return (
@@ -206,12 +207,13 @@ const SearchRides = (props) => {
             <View style={styles.acceptView}>
               <TouchableOpacity
                 style={styles.acceptButton}
-                onPress={() =>
+                onPress={() => {
+                  acceptRide();
                   props.onChange({
                     rideAccept: true,
                     startTrip: true,
-                  })
-                }
+                  });
+                }}
               >
                 <Text style={styles.acceptButtonText}>Accept</Text>
               </TouchableOpacity>
@@ -227,23 +229,24 @@ const SearchRides = (props) => {
           </View>
 
           <View style={styles.availableRidesContent}>
-            {state.availableRide?.map((rides, id) => {
+            {rides?.map((ride, id) => {
               return (
                 <TouchableOpacity
                   style={styles.availableRidesContentButton}
-                  onPress={() =>
+                  onPress={() => {
+                    dispatch(selectRide(ride));
                     setState({
                       ...state,
                       selectedRide: {
                         isAlert: true,
-                        pickupPoint: rides.pickupPoint,
-                        dropPoint: rides.dropPoint,
-                        distance: rides.distance,
-                        estFair: rides.estFair,
-                        goodsType: rides.goodsType,
+                        pickupPoint: ride.pickupPoint,
+                        dropPoint: ride.dropPoint,
+                        distance: ride.distance,
+                        estFair: ride.estFair,
+                        goodsType: ride.goodsType,
                       },
-                    })
-                  }
+                    });
+                  }}
                   key={id}
                 >
                   <View style={styles.availableRidesContentButtonBox}></View>
@@ -252,8 +255,8 @@ const SearchRides = (props) => {
                     numberOfLines={2}
                     ellipsizeMode={"tail"}
                   >
-                    Fare {rides.estFair}, {rides.distance}Km, From{" "}
-                    {rides.pickupPoint} to {rides.dropPoint}
+                    Fare {ride.estFair}, {ride.distance}Km, From{" "}
+                    {ride.pickupPoint} to {ride.dropPoint}
                   </Text>
                   {/* <Text
                     style={styles.availableRidesContentButtonText}

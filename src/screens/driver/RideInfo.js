@@ -1,9 +1,19 @@
 import React from "react";
 import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
-
+import io from "socket.io-client";
 import LinearGradient from "react-native-linear-gradient";
-
+import { useSelector } from "react-redux";
+const socket = io("https://fasto-backend.herokuapp.com/");
 const RideInfo = (props) => {
+  const vehicle = useSelector((state) => state.vehicle);
+  console.log(props);
+  const startTrip = () => {
+    console.log("kskskssk");
+    socket.emit("updateRide", {
+      id: vehicle.selectedRide._id,
+      status: "started",
+    });
+  };
   console.log(props);
   return (
     <View style={styles.container}>
@@ -55,12 +65,13 @@ const RideInfo = (props) => {
             </View>
             <TouchableOpacity
               style={styles.Button}
-              onPress={() =>
+              onPress={() => {
+                startTrip();
                 props.onChange({
                   startTrip: false,
                   otpSubmit: true,
-                })
-              }
+                });
+              }}
             >
               <Text style={styles.ButtonText}>Start Trip</Text>
             </TouchableOpacity>

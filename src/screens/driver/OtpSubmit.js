@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -8,17 +8,26 @@ import {
   TextInput,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+import io from "socket.io-client";
+import { getCurrentRide } from "../../redux/vehicle/action";
 
 import LinearGradient from "react-native-linear-gradient";
-
+const socket = io("https://fasto-backend.herokuapp.com/");
 const OtpSubmit = (props) => {
-  //   const dispatch = useDispatch();
-  //   const availableTrips = useSelector(
-  //     (state) => state.vehicle.availableTrips[0]
-  //   );
-  // console.log(availableTrips, "hello-vishal");
-  //   console.log("\n\r__TEST122__ ", availableTrips.pickUpOtp);
-  //   const pickUpOtp = availableTrips.pickUpOtp;
+  const vehicle = useSelector((state) => state.vehicle);
+  const dispatch = useDispatch();
+  const [pickupOtp, setPickupotp] = useState("");
+  const startTrip = () => {
+    console.log("kskskssk");
+    socket.emit("updateRide", {
+      id: vehicle.selectedRide._id,
+      status: "inprogress",
+      StartOpt: pickupOtp,
+      loadingTimer: true,
+    });
+    let rideId = vehicle?.selectedRide?._id;
+    dispatch(getCurrentRide(rideId));
+  };
 
   return (
     <View style={styles.container}>
@@ -98,12 +107,13 @@ const OtpSubmit = (props) => {
           />
           <TouchableOpacity
             style={styles.submitButton}
-            onPress={() =>
+            onPress={() => {
+              startTrip();
               props.onChange({
                 otpSubmit: false,
-                dropLocation: true,
-              })
-            }
+                // dropLocation: true,
+              });
+            }}
           >
             <Text style={styles.ButtonText}>Submit</Text>
           </TouchableOpacity>

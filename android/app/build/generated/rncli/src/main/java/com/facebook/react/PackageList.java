@@ -23,6 +23,8 @@ import org.reactnative.maskedview.RNCMaskedViewPackage;
 import com.reactnativecommunity.netinfo.NetInfoPackage;
 // react-native-device-info
 import com.learnium.RNDeviceInfo.RNDeviceInfo;
+// react-native-geocoder
+import com.devfd.RNGeocoder.RNGeocoderPackage;
 // react-native-gesture-handler
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 // react-native-linear-gradient
@@ -90,6 +92,7 @@ public class PackageList {
       new RNCMaskedViewPackage(),
       new NetInfoPackage(),
       new RNDeviceInfo(),
+      new RNGeocoderPackage(),
       new RNGestureHandlerPackage(),
       new LinearGradientPackage(),
       new MapsPackage(),

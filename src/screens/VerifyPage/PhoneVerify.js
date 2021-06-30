@@ -155,7 +155,7 @@ class PhoneVerify extends React.Component {
     const payload = {
       Mobile: mobileNumber,
       otp: code,
-      userType: "user",
+      userType: "driver",
     };
     console.log("checking payload :: ", payload);
     this.props.verifyOtpHandler(payload, (res) => {

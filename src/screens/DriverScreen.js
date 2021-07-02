@@ -273,7 +273,11 @@ class Driver extends Component {
         {this.state.onlineStatus ? (
           <View style={{ flex: 1 }}>
             {!this.state.rideAccept ? (
-              <SearchRides onChange={(value) => this.setState(value)} />
+              <SearchRides
+                onChange={(value) => this.setState(value)}
+                acceptPassengerRequest={this.acceptPassengerRequest}
+                findPassengers={this.findPassengers}
+              />
             ) : null}
           </View>
         ) : null}

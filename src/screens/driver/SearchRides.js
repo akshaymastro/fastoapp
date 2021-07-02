@@ -209,6 +209,8 @@ const SearchRides = (props) => {
                 style={styles.acceptButton}
                 onPress={() => {
                   acceptRide();
+                  props.acceptPassengerRequest();
+                  props.findPassengers();
                   props.onChange({
                     rideAccept: true,
                     startTrip: true,

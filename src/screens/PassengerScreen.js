@@ -50,6 +50,8 @@ class PassengerScreen extends Component {
       ridePrice: "",
       rideVehicalPrice: "",
       lookingForDriver: false,
+      loadingTimer: false,
+
       driverIsOnTheWay: false,
       predictions: [],
       pickupPredictions: [],
@@ -981,6 +983,7 @@ class PassengerScreen extends Component {
                     value: true,
                   });
                   this.props.bookRide(this.props.vehicle.rideData);
+                  this.requestDriver();
                 }}
               >
                 <Text style={styles.passengerBottomText}>Book Now</Text>

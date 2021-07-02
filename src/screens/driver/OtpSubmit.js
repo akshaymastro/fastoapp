@@ -111,6 +111,7 @@ const OtpSubmit = (props) => {
               startTrip();
               props.onChange({
                 otpSubmit: false,
+                loadingTimer: true,
                 // dropLocation: true,
               });
             }}

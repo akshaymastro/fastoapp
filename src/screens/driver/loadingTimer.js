@@ -114,7 +114,9 @@ const LoadingTimer = (props) => {
           </View>
           <TouchableOpacity
             style={styles.submitButton}
-            onPress={() => props.onChange({ dropLocation: true })}
+            onPress={() =>
+              props.onChange({ loadingTimer: false, dropLocation: true })
+            }
           >
             <Text style={styles.ButtonText}>Submit</Text>
           </TouchableOpacity>

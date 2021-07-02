@@ -38,6 +38,7 @@ class Driver extends Component {
       otpSubmit: false,
       dropLocation: false,
       unloadingTimer: false,
+      loadingTimer: false,
       tripInvoice: false,
     };
     this.acceptPassengerRequest = this.acceptPassengerRequest.bind(this);
@@ -283,12 +284,10 @@ class Driver extends Component {
         {this.state.otpSubmit ? (
           <OtpSubmit onChange={(value) => this.setState(value)} />
         ) : null}
-        {!this.props?.vehicle?.current?.loadingTimer &&
-        this.state.dropLocation ? (
+        {this.state.dropLocation ? (
           <DropLocation onChange={(value) => this.setState(value)} />
         ) : null}
-        {this.props?.vehicle?.current?.loadingTimer &&
-        !this.state.dropLocation ? (
+        {this.state.loadingTimer ? (
           <LoadingTimer onChange={(value) => this.setState(value)} />
         ) : null}
         {this.state.unloadingTimer ? (

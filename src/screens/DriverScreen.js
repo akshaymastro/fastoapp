@@ -107,13 +107,11 @@ class Driver extends Component {
 
       console.log(this.state.lookingForPassengers);
 
-      this.socket = socketIO.connect("https://fasto-backend.herokuapp.com");
-
-      this.socket.on("connect", () => {
-        this.socket.emit("passengerRequest");
+      socket.on("connect", () => {
+        socket.emit("passengerRequest");
       });
 
-      this.socket.on("taxiRequest", async (routeResponse) => {
+      socket.on("taxiRequest", async (routeResponse) => {
         console.log(routeResponse);
         this.setState({
           lookingForPassengers: false,
@@ -132,17 +130,18 @@ class Driver extends Component {
 
   acceptPassengerRequest() {
     console.log(this.props.latitude, "latititue");
-    this.socket.emit("driverLocation", {
+    socket.emit("driverLocation", {
       latitude: this.props.latitude,
       longitude: this.props.longitude,
     });
 
-    const passengerLocation =
-      this.props.pointCoords[this.props.pointCoords.length - 1];
+    const passengerLocation = this.props?.vehicle?.selectedRide;
+    console.log(passengerLocation.pickUpLocation.coordinates[0], "location");
+    console.log(passengerLocation.pickUpLocation.coordinates[1], "location");
 
     BackgroundGeolocation.on("location", (location) => {
       //Send driver location to passenger
-      this.socket.emit("driverLocation", {
+      socket.emit("driverLocation", {
         latitude: location.latitude,
         longitude: location.longitude,
       });
@@ -157,11 +156,11 @@ class Driver extends Component {
 
     if (Platform.OS === "ios") {
       Linking.openURL(
-        `http://maps.apple.com/?daddr=${passengerLocation.latitude},${passengerLocation.longitude}`
+        `http://maps.apple.com/?daddr=${passengerLocation.pickUpLocation.coordinates[0]},${passengerLocation.pickUpLocation.coordinates[1]}`
       );
     } else {
       Linking.openURL(
-        `geo:0,0?q=${passengerLocation.latitude},${passengerLocation.longitude}(Passenger)`
+        `geo:0,0?q=${passengerLocation.pickUpLocation.coordinates[0]},${passengerLocation.pickUpLocation.coordinates[1]}(Passenger)`
       );
     }
   }

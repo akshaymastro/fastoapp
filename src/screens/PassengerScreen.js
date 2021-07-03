@@ -40,6 +40,7 @@ import { getDistance } from "geolib";
 import { getFare } from "../redux/ride/actions";
 import { threadId } from "worker_threads";
 import RestClient from "../utils/RestClient";
+import axios from "axios";
 
 const socket = io("https://fasto-backend.herokuapp.com/");
 
@@ -100,15 +101,27 @@ class PassengerScreen extends Component {
     );
   }
   calcPrice = async () => {
-    var getCurrentDisance = await getDistance(
-      (latitudeLocationPick = this.state.pickUpLocation),
-      (latitudeLocationDrop = this.state.dropLocation)
+    var getCurrentDisance = await axios.get(
+      `https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=${this.props?.vehicle?.rideData?.pickUpLocation?.coordinates[0]},${this.props?.vehicle?.rideData?.pickUpLocation?.coordinates[1]}&destinations=${this.props?.vehicle?.rideData?.dropLocation?.coordinates[0]},${this.props?.vehicle?.rideData?.dropLocation?.coordinates[1]}&key=AIzaSyCdX116ggJ_oadelay7Q5Sqme72S046Ch8`
     );
-    const rideDistance = getCurrentDisance / 1000;
+
+    // getDistance(
+    //   (latitudeLocationPick = {
+    //     lat: this.props?.vehicle?.currentRide?.pickUpLocation?.coordinates[0],
+    //     long: this.props?.vehicle?.currentRide?.pickUpLocation?.coordinates[1],
+    //   }),
+    //   (latitudeLocationDrop = {
+    //     lat: this.props?.vehicle?.currentRide?.dropLocation?.coordinates[0],
+    //     long: this.props?.vehicle?.currentRide?.dropLocation?.coordinates[1],
+    //   })
+    // );
+    const rideDistance =
+      parseInt(getCurrentDisance?.data?.rows[0]?.elements[0]?.distance?.text) *
+      1.60934;
     const vehiclePrice = this.state.rideVehicalPrice;
 
     if (rideDistance > 40) {
-      const distance = rideDistance - 40;
+      const distance = parseInt(rideDistance) - 40;
       const params = {
         km: distance,
         city_name: this.state.pickupDestination,
@@ -123,7 +136,9 @@ class PassengerScreen extends Component {
           body: JSON.stringify(params),
         }
       );
+      console.log(params, "paramsss");
       const result = await response.json();
+      console.log(result, "result");
       const fuelCharge = result?.data[0]?.fuelcharge.fuelcharge || 0;
       this.setState({
         ridePrice: +fuelCharge + Math.floor(rideDistance * vehiclePrice),
@@ -166,6 +181,7 @@ class PassengerScreen extends Component {
       latitude: lat,
       longitude: long,
     };
+
     lat &&
       long &&
       this.setState({
@@ -999,7 +1015,7 @@ class PassengerScreen extends Component {
           />
         ) : null}
 
-        {this.state.bookingConfirmMessage ? (
+        {this.props.vehicle.rideStatus === true ? (
           <BookingConfirmMessage onChange={(value) => this.setState(value)} />
         ) : null}
 

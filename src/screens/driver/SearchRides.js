@@ -9,6 +9,7 @@ import Geocoder from "react-native-geocoder";
 import { getIpAddress } from "react-native-device-info";
 import { fetchUserDetails } from "../../redux/auth/actions";
 import { selectRide } from "../../redux/vehicle/action";
+// import jwtDecode from "jwt-decode";
 
 const socket = io("https://fasto-backend.herokuapp.com/");
 
@@ -25,12 +26,16 @@ const SearchRides = (props) => {
       const long = await AsyncStorage.getItem("long");
       if (lat !== null && long !== null) {
         let decoded;
-
-        await dispatch(fetchUserDetails((res) => setDriver(res.data)));
-        socket.emit("getRidesForDriver", {
-          coordinates: [-122.084, 37.42199833333333],
-        });
-        socket.on("NearByRideList", (res) => setRides(res));
+        if (apiToken !== "") {
+          decoded = jwtDecode(apiToken);
+          console.log(decoded.user.currentLocation.coordinates, "decodedd");
+          console.log(auth, "current Location");
+          await dispatch(fetchUserDetails((res) => setDriver(res.data)));
+          socket.emit("getRidesForDriver", {
+            coordinates: decoded.user.currentLocation.coordinates,
+          });
+          socket.on("NearByRideList", (res) => setRides(res));
+        }
       }
     }
     getRides();
@@ -208,9 +213,8 @@ const SearchRides = (props) => {
               <TouchableOpacity
                 style={styles.acceptButton}
                 onPress={() => {
-                  acceptRide();
-                  props.acceptPassengerRequest();
                   props.findPassengers();
+                  acceptRide();
                   props.onChange({
                     rideAccept: true,
                     startTrip: true,

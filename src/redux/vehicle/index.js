@@ -28,20 +28,25 @@ export default (state = INIT_STATE, action) => {
         },
       };
     case actionTypes.SET_SELECTED_RIDE:
-      return{
+      return {
         ...state,
-        selectedRide: action.payload
-      }
+        selectedRide: action.payload,
+      };
     case actionTypes.NEW_RIDE:
-      return{
+      return {
         ...state,
-        currentRide: action.payload
-      }
+        currentRide: action.payload,
+      };
+    case actionTypes.RIDE_STATUS:
+      return {
+        ...state,
+        rideStatus: action.payload,
+      };
     case actionTypes.CURRENT_RIDE:
-      return{
+      return {
         ...state,
-        current: action.payload
-      }
+        current: action.payload,
+      };
     case actionTypes.CLEAR_USER:
       return INIT_STATE;
 

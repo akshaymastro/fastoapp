@@ -75,7 +75,7 @@ export function getCurrentRide(params) {
       //   dispatch(showLoading());
       const request = `rides/currentRide`;
       console.log(params, "paramss");
-      RestClient.PostRequest(getState, request, {_id:params})
+      RestClient.PostRequest(getState, request, { _id: params })
         .then((result) => {
           //   dispatch(hideLoading());
           console.log(result, "rideeee");
@@ -96,7 +96,13 @@ export function getCurrentRide(params) {
   };
 }
 
-export function selectRide(params){
+export const rideAccepted = () => (dispatch) => {
+  dispatch({
+    type: actionTypes.RIDE_STATUS,
+    payload: true,
+  });
+};
+export function selectRide(params) {
   return (dispatch, getState) => {
     const isOnline = getState().network.isOnline;
 
@@ -104,15 +110,15 @@ export function selectRide(params){
       //   dispatch(showLoading());
       const request = `rides/createride`;
       console.log(params, "paramss");
-     dispatch({
-       type: actionTypes.SET_SELECTED_RIDE,
-       payload: params
-     })
+      dispatch({
+        type: actionTypes.SET_SELECTED_RIDE,
+        payload: params,
+      });
     } else {
       //   dispatch(hideLoading());
       alert("Please check your internet connection");
     }
-  }
+  };
 }
 
 export function getCategoryList(params, callback) {

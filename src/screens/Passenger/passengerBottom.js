@@ -141,12 +141,15 @@ const PassengerBottom = (props) => {
                   <Text style={select === lists._id ? styles.toselected : null}>
                     {lists.vehical_name}
                   </Text>
+
                   <Image
                     source={{ uri: lists.vehical_image }}
                     width={55}
                     style={styles.tempoImageSelected}
                   />
-
+                  <Text style={select === lists._id ? styles.toselected : null}>
+                    ₹{lists.vehical_KM}
+                  </Text>
                   {!select > 0 ? null : (
                     <View style={{ flex: 1 }}>
                       <Text

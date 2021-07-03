@@ -93,6 +93,34 @@ function genericContainer(WrappedComponent) {
         console.error(error);
       }
     }
+    async getRoutedriverDirections(
+      lat,
+      long,
+      currentlat,
+      currentlong,
+      destinationPlaceId,
+      destinationName
+    ) {
+      try {
+        const response = await fetch(
+          `https://maps.googleapis.com/maps/api/directions/json?origin=${lat},${long}&destinations=side_of_road:${currentlat},${currentlong}&key=${apiKey}`
+        );
+        const json = await response.json();
+        console.log(json);
+        const points = PolyLine.decode(json.routes[0].overview_polyline.points);
+        const pointCoords = points.map((point) => {
+          return { latitude: point[0], longitude: point[1] };
+        });
+        this.setState({
+          pointCoords,
+          routeResponse: json,
+        });
+        Keyboard.dismiss();
+        return destinationName;
+      } catch (error) {
+        console.error(error);
+      }
+    }
 
     updatePickupPoint = (coord) => {
       this.setState({ latitude: coord.latitude, longitude: coord.longitude });
@@ -104,6 +132,7 @@ function genericContainer(WrappedComponent) {
         <WrappedComponent
           {...this.props}
           getRouteDirections={this.getRouteDirections}
+          getRoutedriverDirections={this.getRoutedriverDirections}
           latitude={this.state.latitude}
           longitude={this.state.longitude}
           pointCoords={this.state.pointCoords}

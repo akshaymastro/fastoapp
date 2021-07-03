@@ -25,7 +25,7 @@ import { connect } from "react-redux";
 import AsyncStorage from "@react-native-community/async-storage";
 import jwtDecode from "jwt-decode";
 import LoadingTimer from "./driver/loadingTimer";
-
+import { rideAccepted } from "../redux/vehicle/action";
 const socket = io("https://fasto-backend.herokuapp.com/");
 class Driver extends Component {
   constructor(props) {
@@ -101,34 +101,35 @@ class Driver extends Component {
     console.log(this.props.pointCoords, "pointcoords");
   }
 
-  findPassengers() {
-    if (!this.state.lookingForPassengers) {
-      this.setState({ lookingForPassengers: true });
+  findPassengers = () => {
+    console.log("helllllllo");
+    socket.emit("passengerRequest");
 
-      console.log(this.state.lookingForPassengers);
-
-      socket.on("connect", () => {
-        socket.emit("passengerRequest");
+    socket.on("taxiRequest", async (routeResponse) => {
+      console.log(routeResponse, "aeddasdasd");
+      this.setState({
+        lookingForPassengers: false,
+        passengerFound: true,
+        routeResponse,
       });
-
-      socket.on("taxiRequest", async (routeResponse) => {
-        console.log(routeResponse);
-        this.setState({
-          lookingForPassengers: false,
-          passengerFound: true,
-          routeResponse,
-        });
-        await this.props.getRouteDirections(
-          routeResponse.geocoded_waypoints[0].place_id
-        );
-        this.map.fitToCoordinates(this.props.pointCoords, {
-          edgePadding: { top: 20, bottom: 20, left: 20, right: 20 },
-        });
+      console.log(this.props.common.apiToken);
+      let decoded = jwtDecode(this.props.common.apiToken);
+      console.log(decoded.user.currentLocation.coordinates, "decodedd");
+      const res = await this.props.getRoutedriverDirections(
+        this.props?.vehicle?.selectedRide?.pickUpLocation?.coordinates[0],
+        this.props?.vehicle?.selectedRide?.pickUpLocation?.coordinates[1],
+        decoded.user.currentLocation.coordinates[0],
+        decoded.user.currentLocation.coordinates[1]
+      );
+      console.log(res, "jasjdjsdjs");
+      this.map.fitToCoordinates(this.props.pointCoords, {
+        edgePadding: { top: 20, bottom: 20, left: 20, right: 20 },
       });
-    }
-  }
+    });
+    this.props.rideAccepted();
+  };
 
-  acceptPassengerRequest() {
+  acceptPassengerRequest = () => {
     console.log(this.props.latitude, "latititue");
     socket.emit("driverLocation", {
       latitude: this.props.latitude,
@@ -163,7 +164,7 @@ class Driver extends Component {
         `geo:0,0?q=${passengerLocation.pickUpLocation.coordinates[0]},${passengerLocation.pickUpLocation.coordinates[1]}(Passenger)`
       );
     }
-  }
+  };
   render() {
     console.log(this.props?.vehicle?.current, "current location");
     let endMarker = null;
@@ -310,7 +311,7 @@ const mapStateToProps = (state) => {
     vehicle: state.vehicle,
   };
 };
-export default connect(mapStateToProps)(Driver);
+export default connect(mapStateToProps, { rideAccepted })(Driver);
 const styles = StyleSheet.create({
   findDriver: {
     backgroundColor: "black",

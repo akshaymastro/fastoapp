@@ -61,7 +61,7 @@ const Login = (props) => {
     console.log("checking login props :: ", props);
     const payload = {
       Mobile: data.mobile,
-      userType: "user",
+      userType: "driver",
     };
     if (validation()) {
       props.authenticateUser(payload, (res) => {

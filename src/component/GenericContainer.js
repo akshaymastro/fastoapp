@@ -93,17 +93,21 @@ function genericContainer(WrappedComponent) {
         console.error(error);
       }
     }
-    async getRoutedriverDirections(
+    getRoutedriverDirections = async (
       lat,
       long,
       currentlat,
       currentlong,
       destinationPlaceId,
       destinationName
-    ) {
+    ) => {
       try {
+        console.log(lat);
+        console.log(long);
+        console.log(currentlat);
+        console.log(currentlong);
         const response = await fetch(
-          `https://maps.googleapis.com/maps/api/directions/json?origin=${lat},${long}&destinations=side_of_road:${currentlat},${currentlong}&key=${apiKey}`
+          `https://maps.googleapis.com/maps/api/directions/json?origin=${lat},${long}&destination=${currentlat},${currentlong}&key=${apiKey}`
         );
         const json = await response.json();
         console.log(json);
@@ -120,7 +124,7 @@ function genericContainer(WrappedComponent) {
       } catch (error) {
         console.error(error);
       }
-    }
+    };
 
     updatePickupPoint = (coord) => {
       this.setState({ latitude: coord.latitude, longitude: coord.longitude });

@@ -100,7 +100,7 @@ class PassengerScreen extends Component {
       1000
     );
   }
-  calcPrice = async () => {
+  calcPrice = async (vPrice) => {
     var getCurrentDisance = await axios.get(
       `https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=${this.props?.vehicle?.rideData?.pickUpLocation?.coordinates[0]},${this.props?.vehicle?.rideData?.pickUpLocation?.coordinates[1]}&destinations=${this.props?.vehicle?.rideData?.dropLocation?.coordinates[0]},${this.props?.vehicle?.rideData?.dropLocation?.coordinates[1]}&key=AIzaSyCdX116ggJ_oadelay7Q5Sqme72S046Ch8`
     );
@@ -118,7 +118,7 @@ class PassengerScreen extends Component {
     const rideDistance =
       parseInt(getCurrentDisance?.data?.rows[0]?.elements[0]?.distance?.text) *
       1.60934;
-    const vehiclePrice = this.state.rideVehicalPrice;
+    const vehiclePrice = vPrice;
 
     if (rideDistance > 40) {
       const distance = parseInt(rideDistance) - 40;
@@ -907,6 +907,8 @@ class PassengerScreen extends Component {
               getVehiclePrice={(rideVehicalPrice) =>
                 this.setState({ rideVehicalPrice })
               }
+              calPrice={this.calcPrice}
+              ridePrice={this.state.ridePrice}
             />
             <View style={styles.passengerBottomView}>
               <TouchableOpacity

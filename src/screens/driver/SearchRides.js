@@ -213,8 +213,9 @@ const SearchRides = (props) => {
               <TouchableOpacity
                 style={styles.acceptButton}
                 onPress={() => {
-                  props.findPassengers();
                   acceptRide();
+                  props.acceptPassengerRequest();
+                  props.findPassengers();
                   props.onChange({
                     rideAccept: true,
                     startTrip: true,

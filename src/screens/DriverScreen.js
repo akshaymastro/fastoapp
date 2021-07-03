@@ -101,30 +101,39 @@ class Driver extends Component {
     console.log(this.props.pointCoords, "pointcoords");
   }
 
-  findPassengers = () => {
+  findPassengers = async () => {
     console.log("helllllllo");
-    socket.emit("passengerRequest");
-
-    socket.on("taxiRequest", async (routeResponse) => {
-      console.log(routeResponse, "aeddasdasd");
-      this.setState({
-        lookingForPassengers: false,
-        passengerFound: true,
-        routeResponse,
+    socket.on("connection", () => {
+      socket.emit("passengerRequest");
+    });
+    socket.on("connection", () => {
+      socket.on("taxiRequest", async (routeResponse) => {
+        console.log(routeResponse, "aeddasdasd");
+        this.setState({
+          lookingForPassengers: false,
+          passengerFound: true,
+          routeResponse,
+        });
+        console.log(this.props.common.apiToken);
       });
-      console.log(this.props.common.apiToken);
-      let decoded = jwtDecode(this.props.common.apiToken);
-      console.log(decoded.user.currentLocation.coordinates, "decodedd");
-      const res = await this.props.getRoutedriverDirections(
-        this.props?.vehicle?.selectedRide?.pickUpLocation?.coordinates[0],
-        this.props?.vehicle?.selectedRide?.pickUpLocation?.coordinates[1],
-        decoded.user.currentLocation.coordinates[0],
-        decoded.user.currentLocation.coordinates[1]
-      );
-      console.log(res, "jasjdjsdjs");
-      this.map.fitToCoordinates(this.props.pointCoords, {
-        edgePadding: { top: 20, bottom: 20, left: 20, right: 20 },
-      });
+    });
+    let decoded = jwtDecode(this.props.common.apiToken);
+    console.log(decoded.user.currentLocation.coordinates, "decodedd");
+    const res = await this.props.getRoutedriverDirections(
+      this.props?.vehicle?.selectedRide?.pickUpLocation?.coordinates[0],
+      this.props?.vehicle?.selectedRide?.pickUpLocation?.coordinates[1],
+      decoded.user.currentLocation.coordinates[0],
+      decoded.user.currentLocation.coordinates[1]
+    );
+    const ptcoords = [
+      ...this.props.pointCoords,
+      {
+        latitude: decoded.user.currentLocation.coordinates[0],
+        longitude: decoded.user.currentLocation.coordinates[1],
+      },
+    ];
+    this.map.fitToCoordinates(ptcoords, {
+      edgePadding: { top: 20, bottom: 20, left: 20, right: 20 },
     });
     this.props.rideAccepted();
   };
@@ -148,22 +157,22 @@ class Driver extends Component {
       });
     });
 
-    BackgroundGeolocation.checkStatus((status) => {
-      // you don't need to check status before start (this is just the example)
-      if (!status.isRunning) {
-        BackgroundGeolocation.start(); //triggers start on start event
-      }
-    });
+    // BackgroundGeolocation.checkStatus((status) => {
+    //   // you don't need to check status before start (this is just the example)
+    //   if (!status.isRunning) {
+    //     BackgroundGeolocation.start(); //triggers start on start event
+    //   }
+    // });
 
-    if (Platform.OS === "ios") {
-      Linking.openURL(
-        `http://maps.apple.com/?daddr=${passengerLocation.pickUpLocation.coordinates[0]},${passengerLocation.pickUpLocation.coordinates[1]}`
-      );
-    } else {
-      Linking.openURL(
-        `geo:0,0?q=${passengerLocation.pickUpLocation.coordinates[0]},${passengerLocation.pickUpLocation.coordinates[1]}(Passenger)`
-      );
-    }
+    // if (Platform.OS === "ios") {
+    //   Linking.openURL(
+    //     `http://maps.apple.com/?daddr=${passengerLocation.pickUpLocation.coordinates[0]},${passengerLocation.pickUpLocation.coordinates[1]}`
+    //   );
+    // } else {
+    //   Linking.openURL(
+    //     `geo:0,0?q=${passengerLocation.pickUpLocation.coordinates[0]},${passengerLocation.pickUpLocation.coordinates[1]}(Passenger)`
+    //   );
+    // }
   };
   render() {
     console.log(this.props?.vehicle?.current, "current location");

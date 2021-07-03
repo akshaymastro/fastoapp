@@ -129,6 +129,7 @@ const PassengerBottom = (props) => {
                       url: lists.vehical_image,
                     });
                     props.getVehiclePrice(lists.vehical_KM);
+                    props.calPrice(lists.vehical_KM);
                     dispatch(
                       setRideData({
                         key: "vehicalSelected",
@@ -148,7 +149,7 @@ const PassengerBottom = (props) => {
                     style={styles.tempoImageSelected}
                   />
                   <Text style={select === lists._id ? styles.toselected : null}>
-                    ₹{lists.vehical_KM}
+                    ₹ {props.ridePrice}
                   </Text>
                   {!select > 0 ? null : (
                     <View style={{ flex: 1 }}>
@@ -163,7 +164,7 @@ const PassengerBottom = (props) => {
                             select === lists._id ? styles.toselected : null
                           }
                         >
-                          ₹ {lists.vehical_KM}
+                          ₹ {props.ridePrice}
                         </Text>
 
                         <TouchableOpacity
